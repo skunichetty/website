@@ -1,0 +1,19 @@
+// Import bootstrap first as the base CSS stylesheet
+@import "bootstrap/scss/bootstrap";
+
+// The main file containing all partials + styles. Gets directly transpiled to CSS.
+@import 'abstracts/variables';
+
+@import 'base/base';
+
+@import 'layout/nav';
+@import 'layout/page';
+@import 'layout/footer';
+
+@import 'components/articles';
+@import 'components/post-info';
+@import 'components/post-list';
+
+@import 'pages/about-me';
+@import 'pages/article';
+@import 'pages/home';

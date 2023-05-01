@@ -1,0 +1,10 @@
+---
+layout: main.njk
+---
+{% if collections[key] !== undefined %}
+    <h1 class="title post-list-title">Latest {{ key }}:</h1>
+    {{ content | safe }}
+    {% include "postlist.njk" %}
+{% else %}
+    <p> No {{ key }} created yet.</p>
+{% endif %}

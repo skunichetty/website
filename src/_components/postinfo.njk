@@ -1,0 +1,15 @@
+<footer class="post-info">
+    <p class="post-info-item post-info-first" title="{{ date.toUTCString() }}">
+            Published {{ date.toUTCString().slice(0,17) }}
+    </p>
+    {% if modified %}
+    <p class="post-info-item" title="{{ modified.toUTCString() }}">
+            Updated {{ modified.toUTCString().slice(0,17) }}
+    </p>
+    {% endif %}
+    {% if author %}
+    <address class="vcard author post-info-item">
+            By {{ author }}
+    </address>
+    {% endif %}
+</footer>

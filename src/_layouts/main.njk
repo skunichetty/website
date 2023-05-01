@@ -1,0 +1,10 @@
+---
+layout: base.njk
+---
+{% set navEntry = true %}
+{% include "nav.njk" %}
+<div class="row content">
+    {% block content %}
+        {{ content | safe }}
+    {% endblock %}
+</div>

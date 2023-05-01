@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+        {% block title %}{{ title }}{% endblock %}
+    </title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="11ty" />
+    <link rel="icon" type="image/png" href="{{ SITEURL }}/favicon.png">
+    <link rel="stylesheet" href="{{ '/static/main.css' | url }}">
+</head>
+
+<body id="index" class="home container-fluid">
+    {% block content %}
+        {{ content | safe }}
+    {% endblock %}
+    {% include "footer.njk" %}
+    <!--Scripts-->
+    <script src={{'/static/main.js' | url }}></script>
+</body>
+
+</html>

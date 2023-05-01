@@ -1,0 +1,16 @@
+<ol class="post-list">
+    {% for entry in collections[key] | reverse %}
+    <header>
+    <li><h3 class="title"><a href="{{ entry.url | url}}">{{ entry.data.title }}</a></h3></li>
+    </header>
+    <div class="entry-content">
+        {% if entry.data.date %}
+        <p>{{ entry.data.date.toUTCString().slice(0,17) }}</p>
+        {% endif %}
+        {% if entry.data.summary %}
+        <p>{{ entry.data.summary }}</p>
+        {% endif %}
+    </div>
+    {% if not loop.last %}<hr>{% endif %}
+    {% endfor %} 
+</ol>
