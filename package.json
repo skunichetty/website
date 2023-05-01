@@ -358,13 +358,13 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/skunichetty/skunichetty-website.git"
+        "url": "git+https://github.com/skunichetty/website.git"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/skunichetty/skunichetty-website/issues"
+        "url": "https://github.com/skunichetty/website/issues"
     },
-    "homepage": "https://github.com/skunichetty/skunichetty-website#readme"
+    "homepage": "https://github.com/skunichetty/website#readme"
 }
