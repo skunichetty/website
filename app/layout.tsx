@@ -20,17 +20,13 @@ export default function RootLayout({
       title: "Posts",
       href: "/posts",
     },
-    {
-      title: "About Me",
-      href: "/aboutme",
-    },
   ];
 
   return (
     <html lang="en">
       <body className={`${inter_tight.className} p-10`}>
         <Navbar links={links} />
-        {children}
+        <div className="content mt-6">{children}</div>
       </body>
     </html>
   );
