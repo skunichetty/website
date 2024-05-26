@@ -19,12 +19,17 @@ interface NavbarProps {
   links: NavbarItem[];
 }
 
-function NavbarPill({ title, href, active }: NavbarItemProps) {
+interface NavbarSubtypeProps {
+  links: NavbarItem[];
+  pathname: string;
+}
+
+function NavbarRowItem({ title, href, active }: NavbarItemProps) {
   return (
     <Link
       className={`font-bold ${
-        active ? "border-b-2  hover:border-blue-600" : ""
-      } hover:text-blue-600 transition`}
+        active ? "text-white" : "text-gray-400"
+      } hover:text-blue-500 transition`}
       href={href}
     >
       {title}
@@ -32,12 +37,12 @@ function NavbarPill({ title, href, active }: NavbarItemProps) {
   );
 }
 
-function NavbarRow({ title, href, active }: NavbarItemProps) {
+function NavbarDropdownItem({ title, href, active }: NavbarItemProps) {
   return (
     <Link
       className={`block w-full ${
-        active ? "font-bold" : "font-normal"
-      } hover:text-blue-600 py-2 pl-3 transition flex flew-row items-center gap-2`}
+        active ? "font-bold text-white" : "font-normal text-gray-400"
+      } hover:text-blue-500 py-2 pl-3 transition flex flew-row items-center gap-2`}
       href={href}
     >
       {active ? <Icon name="arrow-right-sharp" /> : <></>} {title}
@@ -45,11 +50,43 @@ function NavbarRow({ title, href, active }: NavbarItemProps) {
   );
 }
 
+function NavbarRow({ links, pathname }: NavbarSubtypeProps) {
+  return (
+    <ul className="flex-row sm:flex hidden divide-x-2 divide-gray-400 text-gray-400">
+      {links.map((item) => (
+        <li key={item.title} className="px-3 my-1">
+          <NavbarRowItem
+            title={item.title}
+            href={item.href}
+            active={pathname === item.href}
+          />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function NavbarDropdown({ links, pathname }: NavbarSubtypeProps) {
+  return (
+    <ul className="flex-col sm:hidden visible mt-6 divide-y-2 divide-gray-400 border-y-2 text-gray-400">
+      {links.map((item) => (
+        <li key={item.title}>
+          <NavbarDropdownItem
+            title={item.title}
+            href={item.href}
+            active={pathname === item.href}
+          />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function Logo() {
   return (
     <Link
       href="/"
-      className="sm:text-xl text-md font-bold text-pretty  hover:text-blue-600 transition"
+      className="sm:text-xl text-md font-bold text-pretty hover:text-blue-500 transition"
     >
       skunichetty.dev
     </Link>
@@ -58,27 +95,13 @@ function Logo() {
 
 export default function Navbar({ links }: NavbarProps) {
   const pathname = usePathname();
-  const [dropdownActive, setDropdownActive] = useState(true);
+  const [dropdownActive, setDropdownActive] = useState(false);
 
   return (
-    <div>
-      <nav
-        className={`flex flex-row items-center justify-between ${
-          dropdownActive ? "mb-2" : "mb-5"
-        }`}
-      >
+    <div className="px-10 pt-10">
+      <nav className={`flex flex-row items-center justify-between`}>
         <Logo />
-        <ul className="flex-row sm:flex hidden divide-x-2">
-          {links.map((item) => (
-            <li key={item.title} className="px-3 my-1">
-              <NavbarPill
-                title={item.title}
-                href={item.href}
-                active={pathname === item.href}
-              />
-            </li>
-          ))}
-        </ul>
+        <NavbarRow links={links} pathname={pathname} />
         <button
           type="button"
           className="sm:hidden visible"
@@ -88,20 +111,8 @@ export default function Navbar({ links }: NavbarProps) {
         </button>
       </nav>
       {dropdownActive ? (
-        <ul className="flex-col sm:hidden visible mb-5 divide-y-2 border-y-2">
-          {links.map((item) => (
-            <li key={item.title}>
-              <NavbarRow
-                title={item.title}
-                href={item.href}
-                active={pathname === item.href}
-              />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <div></div>
-      )}
+        <NavbarDropdown links={links} pathname={pathname} />
+      ) : null}
     </div>
   );
 }
