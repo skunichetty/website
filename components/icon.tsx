@@ -11,6 +11,7 @@ import {
   IoCaretDown,
   IoCaretUp,
   IoClipboardOutline,
+  IoCodeSlashSharp,
   IoCopyOutline,
   IoLogoDiscord,
   IoLogoGithub,
@@ -50,6 +51,7 @@ const iconMap: IconMap = {
   menu: IoMenu,
   "arrow-left-sharp": IoArrowBackSharp,
   "arrow-right-sharp": IoArrowForwardSharp,
+  code: IoCodeSlashSharp,
 };
 
 export default function Icon({ name }: IconProps) {
