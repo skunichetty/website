@@ -1,0 +1,36 @@
+# .github/workflows/build-and-deploy.yml
+
+name: Node.js CI
+permissions:
+  contents: write
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/actions/checkout
+      - name: Checkout source repository
+        uses: actions/checkout@v3
+      # https://github.com/actions/setup-node
+      - name: Setup Node.js installation
+        uses: actions/setup-node@v3
+        with:
+          node-version: 21
+          cache: npm
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build Next App
+        run: |
+          npm run build
+          touch out/.nojekyll
+      - name: Add CNAME
+        run: echo "skunichetty.dev" > out/CNAME
+      - name: Deploy to Github Pages
+        # https://github.com/JamesIves/github-pages-deploy-action
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: out
