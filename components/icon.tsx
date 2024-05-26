@@ -13,6 +13,7 @@ import {
   IoClipboardOutline,
   IoCodeSlashSharp,
   IoCopyOutline,
+  IoLibrarySharp,
   IoLogoDiscord,
   IoLogoGithub,
   IoLogoInstagram,
@@ -21,6 +22,8 @@ import {
   IoLogoTwitter,
   IoMail,
   IoMenu,
+  IoSchoolSharp,
+  IoTerminalSharp,
 } from "react-icons/io5";
 
 interface IconProps {
@@ -52,6 +55,9 @@ const iconMap: IconMap = {
   "arrow-left-sharp": IoArrowBackSharp,
   "arrow-right-sharp": IoArrowForwardSharp,
   code: IoCodeSlashSharp,
+  terminal: IoTerminalSharp,
+  graduation: IoSchoolSharp,
+  library: IoLibrarySharp,
 };
 
 export default function Icon({ name }: IconProps) {

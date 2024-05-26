@@ -21,10 +21,6 @@ export default function RootLayout({
       title: "Posts",
       href: "/posts",
     },
-    {
-      title: "About Me",
-      href: "/aboutme",
-    },
   ];
 
   return (
