@@ -17,7 +17,7 @@ const experiences = [
   {
     position: "Machine Learning Engineer Intern",
     start_date: new Date("May 2022"),
-    end_date: new Date("August 2022"),
+    end_date: new Date("July 2022"),
     company: "Mage",
     href: "https://www.mage.ai",
     location: "Santa Clara, CA",
@@ -27,6 +27,13 @@ const experiences = [
     start_date: new Date("August 2022"),
     end_date: new Date("April 2024"),
     company: "University of Michigan CSE",
+    location: "Ann Arbor, MI",
+  },
+  {
+    position: "Teaching Assistant",
+    start_date: new Date("September 2021"),
+    end_date: new Date("April 2022"),
+    company: "University of Michigan Physics",
     location: "Ann Arbor, MI",
   },
 ];
