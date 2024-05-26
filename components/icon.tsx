@@ -14,6 +14,7 @@ import {
   IoCodeSlashSharp,
   IoCopyOutline,
   IoLibrarySharp,
+  IoLocationSharp,
   IoLogoDiscord,
   IoLogoGithub,
   IoLogoInstagram,
@@ -24,6 +25,7 @@ import {
   IoMenu,
   IoSchoolSharp,
   IoTerminalSharp,
+  IoTimeSharp,
 } from "react-icons/io5";
 
 interface IconProps {
@@ -58,6 +60,8 @@ const iconMap: IconMap = {
   terminal: IoTerminalSharp,
   graduation: IoSchoolSharp,
   library: IoLibrarySharp,
+  time: IoTimeSharp,
+  location: IoLocationSharp,
 };
 
 export default function Icon({ name }: IconProps) {

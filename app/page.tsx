@@ -4,6 +4,7 @@ import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import Dropdown from "@/components/dropdown";
 import ExperienceList from "@/components/experience_list";
+import Location from "@/components/location";
 
 const experiences = [
   {
@@ -56,9 +57,14 @@ export default function Home() {
 
   useGSAP(
     () => {
-      gsap.from(".line1", { y: 25, opacity: 0, duration: 1 });
-      gsap.from(".line2", { y: 35, opacity: 0, duration: 1.15 });
-      gsap.from(".info", { y: 45, opacity: 0, duration: 1.25 });
+      let timeline = gsap.timeline();
+
+      timeline.from(
+        ".line",
+        { y: 25, opacity: 0, duration: 1, stagger: 0.05 },
+        0
+      );
+      timeline.from(".info", { opacity: 0, duration: 0.5 }, 1);
     },
     { scope: main }
   );
@@ -66,9 +72,12 @@ export default function Home() {
   return (
     <div className="sm:w-4/5 w-full" ref={main}>
       <div className="block h-fit mt-6">
-        <div className="line1 text-4xl">Hi, I&apos;m Sachchit.</div>
-        <div className="line2 sm:text-2xl text-xl mt-1">
+        <div className="line text-4xl">Hi, I&apos;m Sachchit.</div>
+        <div className="line sm:text-2xl text-xl mt-1">
           I&apos;m a software engineer and computer scientist.
+        </div>
+        <div className="line">
+          <Location />
         </div>
       </div>
       <div className="info grid grid-row-1 grid-col-3 gap-1 my-5">
