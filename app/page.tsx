@@ -23,10 +23,10 @@ const experiences = [
     location: "Santa Clara, CA",
   },
   {
-    position: "Lead TA - Machine Learning",
+    position: "Lead Instructional Aide - Machine Learning",
     start_date: new Date("August 2022"),
     end_date: new Date("April 2024"),
-    company: "U-M Computer Science",
+    company: "University of Michigan CSE",
     location: "Ann Arbor, MI",
   },
 ];
@@ -60,30 +60,30 @@ export default function Home() {
     <div className="sm:w-4/5 w-full" ref={main}>
       <div className="block h-fit mt-6">
         <div className="line1 text-4xl">Hi, I&apos;m Sachchit.</div>
-        <div className="line2 sm:text-2xl text-md mt-1">
+        <div className="line2 sm:text-2xl text-xl mt-1">
           I&apos;m a software engineer and computer scientist.
         </div>
       </div>
       <div className="info grid grid-row-1 grid-col-3 gap-1 my-5">
-        <Dropdown icon="terminal" title="Experience">
+        <Dropdown icon="terminal" title="Work Experience">
           <ExperienceList experiences={experiences} />
         </Dropdown>
         <Dropdown icon="graduation" title="Education">
-          <div className="md:text-base sm:text-sm text-xs text-gray-400">
+          <div className="md:text-base sm:text-sm text-xs text-gray-400 sm:max-w-md max-w-sm ">
             <p className="text-white">
               Bachelor of Science in Engineering, Computer Science
             </p>
-            <p>University of Michigan, Ann Arbor</p>
-            <p>Aug 2020 - Apr 2024</p>
-            <LineWithHeading
-              heading="Minors"
-              description="Business (Ross School
-              of Business), Mathematics"
-            />
+            <div className="md:text-sm text-xs">
+              <div className="flex flex-row justify-between">
+                <p>University of Michigan, Ann Arbor</p>
+                <p>Aug 2020 - Apr 2024</p>
+              </div>
+              <p>Minors in Business Administration, Mathematics</p>
+            </div>
           </div>
         </Dropdown>
         <Dropdown icon="library" title="Skills">
-          <div className="md:text-base sm:text-sm text-xs text-white">
+          <div className="md:text-sm text-xs text-white">
             <LineWithHeading
               heading="Programming Languages"
               description="C++, Python, TypeScript, Rust"
