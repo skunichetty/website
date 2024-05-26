@@ -2,10 +2,10 @@ import { createElement } from "react";
 import { IconType } from "react-icons";
 import {
   IoArrowBackCircle,
-  IoArrowForward,
-  IoArrowForwardSharp,
   IoArrowBackSharp,
+  IoArrowForward,
   IoArrowForwardCircle,
+  IoArrowForwardSharp,
   IoBrowsersOutline,
   IoCalendarOutline,
   IoCaretDown,

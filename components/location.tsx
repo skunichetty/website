@@ -25,13 +25,13 @@ export function Clock({ locale, timezone }: ClockProps) {
   const parts = timeString.split(" ");
   if (isClient) {
     return (
-      <div className="flex flex-row justify-between min-w-[4.4rem]">
+      <div className="flex flex-row justify-between min-w-[4.35rem]">
         <p>{parts[0]}</p>
         <p>{parts[1]}</p>
       </div>
     );
   } else {
-    return <h1>clock placeholder</h1>;
+    return null;
   }
 }
 

@@ -1,10 +1,10 @@
 "use client";
-import { gsap } from "gsap";
-import { useGSAP } from "@gsap/react";
-import { useRef } from "react";
 import Dropdown from "@/components/dropdown";
 import ExperienceList from "@/components/experience_list";
 import Location from "@/components/location";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { useEffect, useRef } from "react";
 
 const experiences = [
   {
@@ -39,11 +39,74 @@ const experiences = [
   },
 ];
 
+function generateNoise(width: number, height: number, opacity: number): string {
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    const imageData = ctx.createImageData(width, height);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      const value = Math.floor(Math.random() * 256);
+      data[i] = value;
+      data[i + 1] = value;
+      data[i + 2] = value;
+      data[i + 3] = Math.floor(opacity * 255);
+    }
+    ctx.putImageData(imageData, 0, 0);
+    return canvas.toDataURL();
+  }
+  return "";
+}
+
 interface LineWithHeadingProps {
   heading: string;
   description: string;
 }
 
+function Hero() {
+  const hero = useRef<HTMLDivElement>(null);
+  const heroContent = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    gsap.fromTo(
+      hero.current,
+      { xPercent: 100 },
+      {
+        opacity: 1,
+        duration: 2,
+        xPercent: 0,
+        ease: "power1.out",
+      }
+    );
+    gsap.to(heroContent.current, {
+      opacity: 1,
+      duration: 1,
+      delay: 2.2,
+    });
+  });
+
+  useEffect(() => {
+    if (heroContent.current) {
+      const noiseImage = generateNoise(
+        heroContent.current.offsetWidth,
+        heroContent.current.offsetHeight,
+        0.02
+      );
+      heroContent.current.style.backgroundImage = `url(${noiseImage})`;
+    }
+  }, []);
+
+  return (
+    <div
+      className="opacity-0 bg-gradient-to-l from-blue-500 text-white text-center w-full sm:h-52 h-40 mt-5 relative"
+      ref={hero}
+    >
+      <div ref={heroContent} className="opacity-0 w-full h-full"></div>
+    </div>
+  );
+}
 function LineWithHeading({ heading, description }: LineWithHeadingProps) {
   return (
     <p className="text-gray-400">
@@ -53,34 +116,29 @@ function LineWithHeading({ heading, description }: LineWithHeadingProps) {
 }
 
 export default function Home() {
-  const main = useRef(null);
+  const locationInfo = useRef(null);
 
-  useGSAP(
-    () => {
-      let timeline = gsap.timeline();
-
-      timeline.from(
-        ".line",
-        { y: 25, opacity: 0, duration: 1, stagger: 0.05 },
-        0
-      );
-      timeline.from(".info", { opacity: 0, duration: 0.5 }, 1);
-    },
-    { scope: main }
-  );
-
+  useGSAP(() => {
+    gsap.to(locationInfo.current, {
+      opacity: 1,
+      duration: 2,
+      xPercent: 0,
+      ease: "power1.out",
+    });
+  });
   return (
-    <div className="sm:w-4/5 w-full" ref={main}>
-      <div className="block h-fit mt-6">
+    <div className="overflow-hidden">
+      <div className="block h-fit mt-6 sm:w-4/5 w-full px-10">
         <div className="line text-4xl">Hi, I&apos;m Sachchit.</div>
         <div className="line sm:text-2xl text-xl mt-1">
           I&apos;m a software engineer and computer scientist.
         </div>
-        <div className="line">
+        <div className="line opacity-0" ref={locationInfo}>
           <Location />
         </div>
       </div>
-      <div className="info grid grid-row-1 grid-col-3 gap-1 my-5">
+      <Hero />
+      <div className="info grid grid-row-1 grid-col-3 gap-1 px-10 my-5 sm:w-4/5 w-full">
         <Dropdown icon="terminal" title="Work Experience">
           <ExperienceList experiences={experiences} />
         </Dropdown>

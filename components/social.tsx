@@ -1,5 +1,5 @@
-import Icon from "./icon";
 import Link from "next/link";
+import Icon from "./icon";
 
 interface SocialMediaLinkProps {
   type: string;

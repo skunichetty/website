@@ -1,5 +1,5 @@
-import Icon from "./icon";
 import { useState } from "react";
+import Icon from "./icon";
 
 interface DropdownProps {
   icon: string;
@@ -15,9 +15,7 @@ export default function Dropdown({ icon, title, children }: DropdownProps) {
       <button
         type="button"
         onClick={() => setContentVisibility(!contentVisible)}
-        className={`${
-          contentVisible ? "text-white" : "text-gray-400"
-        } hover:text-blue-500 transition`}
+        className="text-white hover:text-blue-500 transition"
       >
         <div className="flex flex-row items-center gap-2">
           <Icon name={contentVisible ? "caret_up" : "caret_down"} />

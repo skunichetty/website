@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Icon from "./icon";
 
 interface ExperienceItemProps {
   position: string;
@@ -40,7 +39,7 @@ export function ExperienceItem({
         {position}
       </p>
       <div className="text-gray-400 md:text-sm text-xs flex flex-row justify-between">
-        <p className="flex flex-row">
+        <div className="flex flex-row">
           {href == undefined ? (
             <span>{company}</span>
           ) : (
@@ -54,7 +53,7 @@ export function ExperienceItem({
           <div className="sm:block hidden">
             &nbsp;&nbsp;•&nbsp;&nbsp;{location}
           </div>
-        </p>
+        </div>
         <div>
           {fmt_date(start_date)}
           {end_date != undefined ? ` - ${fmt_date(end_date)}` : ""}

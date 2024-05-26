@@ -1,6 +1,6 @@
-import SocialMediaLink from "./social";
-import Icon from "./icon";
 import Link from "next/link";
+import Icon from "./icon";
+import SocialMediaLink from "./social";
 
 export default function Footer() {
   return (
