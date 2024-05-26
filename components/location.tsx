@@ -9,8 +9,10 @@ interface ClockProps {
 
 export function Clock({ locale, timezone }: ClockProps) {
   const [time, setTime] = useState(new Date());
+  const [isClient, setClientState] = useState(false);
 
   useEffect(() => {
+    setClientState(true);
     setInterval(() => {
       setTime(() => new Date());
     }, 1000);
@@ -21,13 +23,16 @@ export function Clock({ locale, timezone }: ClockProps) {
   });
 
   const parts = timeString.split(" ");
-
-  return (
-    <div className="flex flex-row justify-between min-w-[4.4rem]">
-      <p>{parts[0]}</p>
-      <p>{parts[1]}</p>
-    </div>
-  );
+  if (isClient) {
+    return (
+      <div className="flex flex-row justify-between min-w-[4.4rem]">
+        <p>{parts[0]}</p>
+        <p>{parts[1]}</p>
+      </div>
+    );
+  } else {
+    return <h1>clock placeholder</h1>;
+  }
 }
 
 export default function Location() {
