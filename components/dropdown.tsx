@@ -15,7 +15,7 @@ export default function Dropdown({ icon, title, children }: DropdownProps) {
       <button
         type="button"
         onClick={() => setContentVisibility(!contentVisible)}
-        className="text-white hover:text-blue-500 transition"
+        className="hover:text-blue-500 transition"
       >
         <div className="flex flex-row items-center gap-2">
           <Icon name={contentVisible ? "caret_up" : "caret_down"} />

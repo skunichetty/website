@@ -100,7 +100,7 @@ function Hero() {
 
   return (
     <div
-      className="opacity-0 bg-gradient-to-l from-blue-500 text-white text-center w-full sm:h-52 h-40 mt-5 relative"
+      className="opacity-0 bg-gradient-to-l from-blue-500 text-center w-full sm:h-52 h-40 mt-5 relative"
       ref={hero}
     >
       <div ref={heroContent} className="opacity-0 w-full h-full"></div>
@@ -109,8 +109,9 @@ function Hero() {
 }
 function LineWithHeading({ heading, description }: LineWithHeadingProps) {
   return (
-    <p className="text-gray-400">
-      <span className="text-white">{heading}:</span> {description}
+    <p>
+      {heading}:&nbsp;&nbsp;
+      <span className="text-gray-500 dark:text-gray-400">{description}</span>
     </p>
   );
 }
@@ -143,21 +144,21 @@ export default function Home() {
           <ExperienceList experiences={experiences} />
         </Dropdown>
         <Dropdown icon="graduation" title="Education">
-          <div className="md:text-base sm:text-sm text-xs text-gray-400 sm:max-w-md max-w-sm ">
-            <p className="text-white">
-              Bachelor of Science in Engineering, Computer Science
-            </p>
-            <div className="md:text-sm text-xs">
+          <div className="md:text-base sm:text-sm text-xs sm:max-w-md max-w-sm ">
+            <p>Bachelor of Science in Engineering, Computer Science</p>
+            <div className="md:text-sm text-xs text-gray-500 dark:text-gray-400">
               <div className="flex flex-row justify-between">
                 <p>University of Michigan, Ann Arbor</p>
                 <p>Aug 2020 - Apr 2024</p>
               </div>
-              <p>Minors in Business Administration, Mathematics</p>
+              <p className="text-gray-500 dark:text-gray-400">
+                Minors in Business Administration, Mathematics
+              </p>
             </div>
           </div>
         </Dropdown>
         <Dropdown icon="library" title="Skills">
-          <div className="md:text-sm text-xs text-white">
+          <div className="md:text-sm text-xs">
             <LineWithHeading
               heading="Programming Languages"
               description="C++, Python, TypeScript, Rust"
