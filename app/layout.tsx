@@ -7,7 +7,10 @@ import "./globals.css";
 const inter_tight = Inter_Tight({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "skunichetty.dev",
+  title: {
+    template: "%s | skunichetty.dev",
+    default: "skunichetty.dev",
+  },
   description: "Sachchit Kunichetty's Personal Website",
 };
 
