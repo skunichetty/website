@@ -72,13 +72,13 @@ function PostInfo({
       >
         {title}
       </Link>
-      <div className="flex flex-row gap-2 text-sm text-gray-500 dark:text-gray-400">
+      <div className="flex flex-row gap-2 text-sm text-gray-600 dark:text-gray-400">
         <p>{date.toLocaleDateString()}</p>
         {editDate != undefined ? (
           <p>(Edited {editDate.toLocaleDateString()})</p>
         ) : null}
       </div>
-      <div className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+      <div className="text-gray-600 dark:text-gray-400 text-sm mt-1">
         {description}
       </div>
     </div>
@@ -90,11 +90,17 @@ export default async function PostMainPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold">Posts</h1>
-      <div className="flex flex-col divide-y-2">
-        {posts.map((post) => (
-          <PostInfo key={post.slug} {...post} />
-        ))}
-      </div>
+      {posts.length === 0 ? (
+        <p className="text-gray-600 dark:text-gray-400">
+          No posts yet - check back later!
+        </p>
+      ) : (
+        <div className="flex flex-col divide-y-2">
+          {posts.map((post) => (
+            <PostInfo key={post.slug} {...post} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

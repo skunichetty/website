@@ -39,7 +39,7 @@ export function ExperienceItem({
         ) : null}
         {position}
       </p>
-      <div className="text-gray-500 dark:text-gray-400 md:text-sm text-xs flex flex-row justify-between">
+      <div className="text-gray-600 dark:text-gray-400 md:text-sm text-xs flex flex-row justify-between">
         <div className="flex flex-row">
           {href == undefined ? (
             <span>{company}</span>

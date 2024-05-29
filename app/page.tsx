@@ -111,7 +111,7 @@ function LineWithHeading({ heading, description }: LineWithHeadingProps) {
   return (
     <p>
       {heading}:&nbsp;&nbsp;
-      <span className="text-gray-500 dark:text-gray-400">{description}</span>
+      <span className="text-gray-600 dark:text-gray-400">{description}</span>
     </p>
   );
 }
@@ -146,12 +146,12 @@ export default function Home() {
         <Dropdown icon="graduation" title="Education">
           <div className="md:text-base sm:text-sm text-xs sm:max-w-md max-w-sm ">
             <p>Bachelor of Science in Engineering, Computer Science</p>
-            <div className="md:text-sm text-xs text-gray-500 dark:text-gray-400">
+            <div className="md:text-sm text-xs text-gray-600 dark:text-gray-400">
               <div className="flex flex-row justify-between">
                 <p>University of Michigan, Ann Arbor</p>
                 <p>Aug 2020 - Apr 2024</p>
               </div>
-              <p className="text-gray-500 dark:text-gray-400">
+              <p className="text-gray-600 dark:text-gray-400">
                 Minors in Business Administration, Mathematics
               </p>
             </div>
