@@ -3,11 +3,15 @@ import Navbar, { NavbarItem } from "@/components/navbar";
 import type { Metadata } from "next";
 import { Inter_Tight } from "next/font/google";
 import "./globals.css";
+import "katex/dist/katex.min.css";
 
 const inter_tight = Inter_Tight({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "skunichetty.dev",
+  title: {
+    template: "%s | skunichetty.dev",
+    default: "skunichetty.dev",
+  },
   description: "Sachchit Kunichetty's Personal Website",
 };
 

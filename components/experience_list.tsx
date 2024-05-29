@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { dateComparator } from "@/app/utils";
 
 interface ExperienceItemProps {
   position: string;
@@ -38,7 +39,7 @@ export function ExperienceItem({
         ) : null}
         {position}
       </p>
-      <div className="text-gray-500 dark:text-gray-400 md:text-sm text-xs flex flex-row justify-between">
+      <div className="text-gray-600 dark:text-gray-400 md:text-sm text-xs flex flex-row justify-between">
         <div className="flex flex-row">
           {href == undefined ? (
             <span>{company}</span>
@@ -72,15 +73,9 @@ export default function ExperienceList({ experiences }: ExperienceListProps) {
     <ul className="sm:max-w-md max-w-sm divide-y-2 divide-gray-400">
       {experiences
         .sort((a, b) => {
-          const a_date = a.end_date == undefined ? Date.now() : a.end_date;
-          const b_date = b.end_date == undefined ? Date.now() : b.end_date;
-          if (a_date < b_date) {
-            return 1;
-          } else if (a_date > b_date) {
-            return -1;
-          } else {
-            return 0;
-          }
+          const a_date = a.end_date == undefined ? new Date() : a.end_date;
+          const b_date = b.end_date == undefined ? new Date() : b.end_date;
+          return dateComparator(a_date, b_date, false);
         })
         .map((experience) => (
           <li className="py-2" key={experience.position}>

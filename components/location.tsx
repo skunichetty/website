@@ -37,7 +37,7 @@ export function Clock({ locale, timezone }: ClockProps) {
 
 export default function Location() {
   return (
-    <div className="flex flex-row gap-4 text-sm text-gray-500 dark:text-gray-400 mt-1">
+    <div className="flex flex-row gap-4 text-sm text-gray-600 dark:text-gray-400 mt-1">
       <div className="flex flex-row items-center gap-1">
         <Icon name="location" />
         <h1>New York, NY, US</h1>

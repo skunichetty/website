@@ -28,7 +28,7 @@ function NavbarRowItem({ title, href, active }: NavbarItemProps) {
   return (
     <Link
       className={`font-bold ${
-        active ? "" : "text-gray-500 dark:text-gray-400"
+        active ? "" : "text-gray-600 dark:text-gray-400"
       } hover:text-blue-500 transition`}
       href={href}
     >
@@ -41,7 +41,7 @@ function NavbarDropdownItem({ title, href, active }: NavbarItemProps) {
   return (
     <Link
       className={`block w-full ${
-        active ? "font-bold" : "font-normal text-gray-500 dark:text-gray-400"
+        active ? "font-bold" : "font-normal text-gray-600 dark:text-gray-400"
       } hover:text-blue-500 py-2 pl-3 transition flex flew-row items-center gap-2`}
       href={href}
     >
@@ -52,7 +52,7 @@ function NavbarDropdownItem({ title, href, active }: NavbarItemProps) {
 
 function NavbarRow({ links, pathname }: NavbarSubtypeProps) {
   return (
-    <ul className="flex-row sm:flex hidden divide-x-2 divide-gray-400 text-gray-500 dark:text-gray-400">
+    <ul className="flex-row sm:flex hidden divide-x-2 divide-gray-400 text-gray-600 dark:text-gray-400">
       {links.map((item) => (
         <li key={item.title} className="px-3 my-1">
           <NavbarRowItem
@@ -68,7 +68,7 @@ function NavbarRow({ links, pathname }: NavbarSubtypeProps) {
 
 function NavbarDropdown({ links, pathname }: NavbarSubtypeProps) {
   return (
-    <ul className="flex-col sm:hidden visible mt-6 divide-y-2 divide-gray-400 border-y-2 text-gray-500 dark:text-gray-400">
+    <ul className="flex-col sm:hidden visible mt-6 divide-y-2 divide-gray-400 border-y-2 text-gray-600 dark:text-gray-400">
       {links.map((item) => (
         <li key={item.title}>
           <NavbarDropdownItem
