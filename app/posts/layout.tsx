@@ -10,5 +10,5 @@ interface LayoutProps {
 }
 
 export default function PostLayout({ children }: LayoutProps) {
-  return <div className="px-10">{children}</div>;
+  return <div className="lg:mx-96 sm:mx-32 mx-10 block">{children}</div>;
 }

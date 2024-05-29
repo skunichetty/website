@@ -1,8 +1,8 @@
 import { readFile, readdir, lstat } from "fs/promises";
 import path from "path";
 import Link from "next/link";
-import { dateComparator } from "../utils";
-import { PostMetadata } from "../components/post";
+import { dateComparator } from "@/app/utils";
+import { PostMetadata } from "@/components/post";
 import { parse } from "yaml";
 
 interface RawPostMetadata {
@@ -41,7 +41,6 @@ async function getPosts() {
 
   return raw_metadata
     .map((post) => {
-      console.log(post);
       let entry: PostMetadata = {
         ...post,
         date: new Date(post.date),

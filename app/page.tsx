@@ -1,7 +1,7 @@
 "use client";
-import Dropdown from "@/app/components/dropdown";
-import ExperienceList from "@/app/components/experience_list";
-import Location from "@/app/components/location";
+import Dropdown from "@/components/dropdown";
+import ExperienceList from "@/components/experience_list";
+import Location from "@/components/location";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useEffect, useRef } from "react";

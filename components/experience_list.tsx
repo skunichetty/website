@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { dateComparator } from "../utils";
+import { dateComparator } from "@/app/utils";
 
 interface ExperienceItemProps {
   position: string;
