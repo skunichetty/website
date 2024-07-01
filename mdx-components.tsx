@@ -15,6 +15,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     ul: ({ children }) => <ul className="list-disc ml-5 mb-3">{children}</ul>,
     ol: ({ children }) => <ol className="list-decimal	ml-5 mb-3">{children}</ol>,
+    li: ({ children }) => <li className="sm:text-base text-sm sm:my-0 my-1">{children}</li>,
     em: ({ children }) => <em className="mr-[0.125rem]">{children}</em>,
     p: ({ children }) => (
       <p className=" sm:text-base text-sm mt-3">{children}</p>
