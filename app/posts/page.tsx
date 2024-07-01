@@ -1,4 +1,4 @@
-import { readFile, readdir, lstat } from "fs/promises";
+import { readFile, readdir } from "fs/promises";
 import path from "path";
 import Link from "next/link";
 import { dateComparator } from "@/app/utils";
@@ -10,20 +10,25 @@ interface RawPostMetadata {
   date: string;
   editDate?: string;
   author: string;
-  slug: string;
   keywords: string[];
   description: string;
+  slug: string;
 }
 
 async function getPosts() {
   const entries = await readdir("app/posts", { withFileTypes: true });
   const folders = entries
     .filter((entry) => entry.isDirectory())
-    .map((entry) => path.join(entry.parentPath, entry.name));
+    .map((entry) => {
+      return {
+        fullpath: path.join(entry.parentPath, entry.name),
+        slug: entry.name
+      };
+    });
 
   const raw_metadata: RawPostMetadata[] = await Promise.all(
-    folders.map(async (folder) => {
-      const filename = `${folder}/page.mdx`;
+    folders.map(async ({fullpath, slug}) => {
+      const filename = `${fullpath}/page.mdx`;
       const main = await readFile(filename);
       const content = main.toString().split("\n");
 
@@ -34,7 +39,10 @@ async function getPosts() {
         while (index < content.length && content[index] != "---") {
           ++index;
         }
-        return parse(content.slice(1, index).join("\n"));
+        return {
+          slug, 
+          ...parse(content.slice(1, index).join("\n"))
+        };
       }
     })
   );

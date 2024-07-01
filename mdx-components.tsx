@@ -13,8 +13,8 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     h4: ({ children }) => (
       <h4 className="text-xl font-medium mt-2 mb-1">{children}</h4>
     ),
-    ul: ({ children }) => <ul className="list-disc ml-5 mb-3">{children}</ul>,
-    ol: ({ children }) => <ol className="list-decimal	ml-5 mb-3">{children}</ol>,
+    ul: ({ children }) => <ul className="list-disc ml-5">{children}</ul>,
+    ol: ({ children }) => <ol className="list-decimal ml-5">{children}</ol>,
     li: ({ children }) => <li className="sm:text-base text-sm sm:my-0 my-1">{children}</li>,
     em: ({ children }) => <em className="mr-[0.125rem]">{children}</em>,
     p: ({ children }) => (
