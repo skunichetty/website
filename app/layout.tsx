@@ -31,7 +31,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter_tight.className} flex flex-col min-h-screen`}>
         <Navbar links={links} />
-        <div className="content my-6">{children}</div>
+        <main className="content my-6">{children}</main>
         <Footer />
       </body>
     </html>

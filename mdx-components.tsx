@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
+import { PostHeader, Callout, BlockEquation, Example, Definition, ImageWithCaption } from "@/components/post";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -39,6 +40,12 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         {children}
       </blockquote>
     ),
+    PostHeader,
+    Callout,
+    BlockEquation,
+    Example,
+    Definition,
+    ImageWithCaption,
     ...components,
   };
 }

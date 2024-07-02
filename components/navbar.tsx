@@ -98,8 +98,8 @@ export default function Navbar({ links }: NavbarProps) {
   const [dropdownActive, setDropdownActive] = useState(false);
 
   return (
-    <div className="px-10 pt-10">
-      <nav className={`flex flex-row items-center justify-between`}>
+    <nav className="px-10 pt-10">
+      <div className="flex flex-row items-center justify-between">
         <Logo />
         <NavbarRow links={links} pathname={pathname} />
         <button
@@ -109,10 +109,10 @@ export default function Navbar({ links }: NavbarProps) {
         >
           <Icon name="menu" />
         </button>
-      </nav>
+      </div>
       {dropdownActive ? (
         <NavbarDropdown links={links} pathname={pathname} />
       ) : null}
-    </div>
+    </nav>
   );
 }

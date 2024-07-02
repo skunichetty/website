@@ -7,7 +7,6 @@ export interface PostMetadata {
   title: string;
   date: Date;
   editDate?: Date;
-  author: string;
   slug: string;
   keywords: string[];
   description: string;
