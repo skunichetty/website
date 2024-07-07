@@ -28,11 +28,11 @@ async function getPosts() {
   const raw_metadata: RawPostMetadata[] = await Promise.all(
     folders.map(async ({fullpath, slug}) => {
       const filename = `${fullpath}/page.mdx`;
-      const contents = matter(await readFile(filename));
-      return {
-        ...contents.data,
+      const contents = {
+        ...matter(await readFile(filename)).data,
         slug
-      };
+      } as RawPostMetadata;
+      return contents; 
     })
   );
 
