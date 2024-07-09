@@ -3,13 +3,12 @@ import path from "path";
 import Link from "next/link";
 import { dateComparator } from "@/app/utils";
 import { PostMetadata } from "@/components/post";
-import { parse } from "yaml";
+import matter from "gray-matter";
 
 interface RawPostMetadata {
   title: string;
   date: string;
   editDate?: string;
-  author: string;
   keywords: string[];
   description: string;
   slug: string;
@@ -29,21 +28,11 @@ async function getPosts() {
   const raw_metadata: RawPostMetadata[] = await Promise.all(
     folders.map(async ({fullpath, slug}) => {
       const filename = `${fullpath}/page.mdx`;
-      const main = await readFile(filename);
-      const content = main.toString().split("\n");
-
-      let index = 0;
-      if (content[index++] !== "---") {
-        console.error(`Invalid MDX file "${filename}": no frontmatter found`);
-      } else {
-        while (index < content.length && content[index] != "---") {
-          ++index;
-        }
-        return {
-          slug, 
-          ...parse(content.slice(1, index).join("\n"))
-        };
-      }
+      const contents = {
+        ...matter(await readFile(filename)).data,
+        slug
+      } as RawPostMetadata;
+      return contents; 
     })
   );
 
@@ -68,7 +57,6 @@ function PostInfo({
   title,
   date,
   editDate,
-  author,
   slug,
   description,
 }: PostMetadata) {
