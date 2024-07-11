@@ -3,6 +3,7 @@ import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import rehypeSlug from "rehype-slug";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -24,7 +25,10 @@ const withMDX = createMDX({
       remarkMdxFrontmatterWithOptions,
       remarkMath,
     ],
-    rehypePlugins: [rehypeKatex],
+    rehypePlugins: [
+        rehypeKatex,
+        rehypeSlug,
+    ],
   },
 });
 
