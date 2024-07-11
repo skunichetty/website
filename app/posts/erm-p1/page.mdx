@@ -1,0 +1,123 @@
+---
+title: "Empirical Risk Minimization: Part 1"
+date: 5/27/2024
+slug: erm-p1 
+keywords: [Machine Learning, Artificial Intelligence]
+description: A non-mathematical, intuition-based discussion of supervised machine learning.
+---
+import model_image from "./model.svg";
+import training_image from "./training.svg";
+
+<PostHeader title={metadata.title} date={new Date(metadata.date)}/>
+
+**Empirical Risk Minimization (ERM)** is a mathematical framework for performing supervised machine learning (ML). This will be **part 1** in a series of blog posts exploring ERM from the ground up. 
+
+
+In **part 1**, we will broadly cover the task of supervised machine learning in a non-rigorous manner. By the end of this post, you should understand what supervised machine learning entails, so that later parts can formalize these concepts using math.
+
+<hr className="mt-3"/>
+
+So on that note - what even _is_ supervised machine learning? Let's start with a formal definition: 
+
+> In supervised machine learning, a model is trained on a dataset containing both _features_ and _labels_, with the goal of predicting the appropriate label for novel features. 
+
+By the end of this post, all of those words should make sense - but let's break it down piece by piece for now.
+
+## What is a model?
+
+The notion of a "model" is in no way unique to machine learning, but nevertheless is a core concept. In machine learning specifically, a **model** is simply a set of instructions (aka, a program) that specify how to predict an output value based on the inputs given to it. 
+
+Differing machine learning tasks require different types of models. In supervised machine learning, there are two common types of prediction tasks, each requiring different model behavior: 
+- **classification** - model must predict the category which the inputs fall into.
+- **regression** - model must predict a real number that should be associated with inputs.
+
+<Example>
+To build intution about models (and to establish a running example), consider the problem of fraud detection in credit card purchases.
+
+An ML researcher may choose to implement a _classification_ model for fraud detection as follows:
+- The model receives input information about the purchase to verify. For this example, let's say the inputs include:
+    - purchase amount in US dollars (USD)
+    - the location of the vendor
+    - time of the purchase
+- The model will then predict that a credit card purchase is either:
+    - _fraudulent_ - if the model believes the purchase is fraudulent 
+    - _not fraudulent_ - otherwise
+
+We'll defer a conversation on _how_ the model predict if a credit card purchase is fraudulent to the [Features and Labels](#features-and-labels) section. 
+</Example>
+
+## Features and Labels
+
+In machine learning, inputs and outputs of models are given special names which we'll use going forward: 
+- inputs = **features** - named as model inputs describe "features" of the phenomena which we'd like to make a prediction for.
+- output = **label** - named as the model outputs "label" the features given to it.
+
+In this sense, a model is really a labelling function - some set of instructions to assign labels to input features.
+
+As before, different supervised machine learning tasks use different label types:
+- **classification** - model predicts _discrete_ labels, one for each category to predict.
+- **regression** - model predicts _continuous_ labels, often real-valued labels.
+
+## Training and Learning
+
+You might have read the fraud detection example above and have wondered 
+> "Well _how_ does a model know what feature values correspond to a fraudulent purchase or not?"
+
+If you were approaching this challenge like a traditional computer scientist, you might decide to develop a fixed algorithm with rules that determine if a credit card purchase is fraudulent or not. Anyone who has tried something like this before can attest - coming up with rules that are precise enough to catch fraud is tricky. 
+
+In place of painstakingly crafting an algorithm to catch most cases of fraud, why not: 
+1. Collect data on previous credit card purchases and whether they were fraudulent.
+2. Extract patterns which correspond to fraudulent purchases from the data
+3. Check for extracted patterns in _new_ purchases to categorize them as fraudulent or not.
+
+Steps 1 and 2 above form the process of **training** a machine learning model - having the model **learn** to recognize patterns in how the features relate to the labels so that it can accurately predict labels in the future. This is where the "learning" in "machine learning" comes from! 
+
+To classify new data, the model just has to identify any patterns that exist, and then predict the label that correspond to those patterns.
+
+<ImageWithCaption 
+    className="dark:invert-0 invert"
+    src={training_image}
+    alt="Comparison of workflows between traditional and machine learning approaches."
+    caption="Comparison of label prediction strategies, contrasting traditional and machine learning based approaches. Image by author." 
+/>
+
+The central requirement to training a model is access to historical data, which we collect as part of a training dataset. A **training dataset** is a collection of **training examples** (also called **examples**) that describe past occurrences of the phenomena we'd like to make a prediction for. Each example in the training dataset has two parts:
+- features that describe the phenomena
+- labels that the model _should_ predict for those input features - often called **ground truth labels**.
+
+The fact that our dataset contains ground truth labels makes this a **supervised** learning task. This contrasts with other methods that don't include labels in the training dataset (which are thus called **unsupervised machine learning** tasks).
+
+Assuming that the training data is representative of the phenomena at hand, the goal is to train our model so that it learns to recognize general patterns in how the features relate to the labels.
+
+<Example>
+Building on the fraud detection example, the model described in the prior excerpt can be trained as follows:
+1. Collect a training dataset which contains numerous examples for previous credit card purchases, with each example containing:
+    - **features**: the purchse amount in USD, the location of the purchase, and time of purchase 
+    - **label**: either "fraudulent" or "not fraudulent" based on if the purchase is actually fraudulent
+2. Train the model to identify patterns in our training dataset and attempt to correctly predict if a purchase is fraudulent for novel data.
+
+If everything works out well, we should ideally have a strong model that accurately predict when a purchase is fraudulent or not.
+
+</Example>
+
+Note that we still have many questions left unanswered. For example:
+1. How do we extract patterns in a training dataset during training?
+2. How does the model relate these patterns to specific labels? 
+3. How do we know if the model is accurate after training (or more generally performs well)?
+4. Are there any downsides to this approach?
+
+<hr className="my-3" />
+
+To summarize what we've learned so far - in a supervised machine learning task, we have two components:
+- A model that predicts some label for a given set of features
+- A training dataset that observes examples of features and their corresponding ground truth labels as observed in the wild.
+
+The goal in a supervised machine learning task is to _train_ the model to recognize patterns in the training dataset, so that the model can predict labels for features that it potentially _hasn't_ seen before.
+
+<ImageWithCaption
+    src={model_image}
+    alt="Summary of supervised machine learning approach in flow-diagram form."
+    caption="Overview of Supervised Machine Learning setup. Image by author."
+/>
+
+In the next part (coming soon), we'll formalize this intuition into mathematics and discuss how ERM presents us with a framework that can describe the training process behind a machine learning algorithm.

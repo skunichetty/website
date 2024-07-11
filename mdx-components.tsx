@@ -4,15 +4,15 @@ import { PostHeader, Callout, BlockEquation, Example, Definition, ImageWithCapti
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
-    h1: ({ children }) => (
-      <h1 className="text-3xl font-bold mt-5 mb-1">{children}</h1>
+    h1: ({ id, children }) => (
+      <h1 id={id} className="text-3xl font-bold mt-5 mb-1">{children}</h1>
     ),
-    h2: ({ children }) => (
-      <h2 className="text-2xl font-bold mt-3 mb-1">{children}</h2>
+    h2: ({ id, children }) => (
+      <h2 id={id} className="text-2xl font-bold mt-3 mb-1">{children}</h2>
     ),
-    h3: ({ children }) => <h3 className="text-2xl mt-3 mb-1">{children}</h3>,
-    h4: ({ children }) => (
-      <h4 className="text-xl font-medium mt-2 mb-1">{children}</h4>
+    h3: ({ id, children }) => <h3 className="text-2xl mt-3 mb-1">{children}</h3>,
+    h4: ({ id, children }) => (
+      <h4 id={id} className="text-xl font-medium mt-2 mb-1">{children}</h4>
     ),
     ul: ({ children }) => <ul className="list-disc ml-5">{children}</ul>,
     ol: ({ children }) => <ol className="list-decimal ml-5">{children}</ol>,
