@@ -1,0 +1,311 @@
+---
+title: "Python-Based AWS Lambda Setup with Docker"
+date: 8/10/2024
+slug: lambda-deployment
+keywords: [AWS, Lambda, AWS Lambda, Amazon Web Serivces, Lambda Python, AWS Lamba Python]
+description: A quick guide to deploying a Python-based AWS Lambda function
+---
+
+import header from "./lambda-mini.png"
+import ecr_main from "./ecr-main.jpg";
+import ecr_create from "./ecr-create.jpg";
+import ecr_push from "./ecr-push.jpg";
+import lambda_main from "./lambda-main.jpg";
+import lambda_create from "./lambda-create.jpg";
+import lambda_view from "./lambda-view.jpg";
+import lambda_test from "./lambda-test.jpg";
+
+<PostHeader title="Python-Based AWS Lambda Setup with Docker" date={new Date("08/10/2024")}/>
+
+I recently got to play around with deploying [Lambda](https://aws.amazon.com/lambda/) functions on AWS, which wasn't as straightforward as I imagined. Here are the steps I took to launch an Python-based AWS Lambda function running in a Docker environment. 
+
+<ImageWithCaption src={header} alt="Rendering of a Lambda symbol in an empty vastness. Image by author." caption="Image by author - no AI!"/>
+
+## Contents
+
+# The structure of a Lambda function
+
+A [serverless function](https://www.cloudflare.com/learning/serverless/glossary/function-as-a-service-faas/) (like AWS Lambda) is basically a cloud-hosted version of the functions we're used to in code. Just provide a function definition plus triggers specifying when your function is called - your cloud provider takes care of the rest.
+
+It's the familiarity of serverless functions which makes them so useful. (Good) devs already use functions as modular, maintainable pieces of logic in codebases - serverless functions encourage the same design patterns in the cloud. Your system can be decoupled into individual serverless functions, each running and automatically scaling to varying workloads. 
+
+In code, a Lambda serverless function is _literally_ implemented by a _handler function_.
+
+```py
+def lambda_handler(event, context):
+    pass
+```
+
+As part of the setup process, we tell AWS to call `lambda_handler()` when the Lambda is triggered. Lambda will then call the function with the following two parameters when triggered: 
+- `event` - the JSON payload sent by the triggering event in `dict` format. You control the exact payload schema and contents when defining a trigger. 
+- `context` - info about the current execution environment. See the [docs](https://docs.aws.amazon.com/lambda/latest/dg/python-context.html) for what context info you have access to.
+
+You can import modules or define variables and classes all outside the handler function - AWS Lambda will load those dependencies in when calling the handler. Simple enough, right? 
+
+# Setting up a Python-based Lambda via Docker
+
+The rest of this post will break down the steps takent to launch a Python-based Lambda using Docker. 
+
+We'll be using Python 3.12 for this tutorial. To make sure your version of Python is supported by Lambda, check the official list of [supported versions](https://docs.aws.amazon.com/lambda/latest/dg/lambda-python.html). 
+
+## Create a folder to store Lambda files
+
+We'll start simple by creating a folder to store all of our Lambda-related files. The name of this folder doesn't really matter, I went with the straightforward `"my-lambda"`. 
+```shell
+mkdir my-lambda
+cd my-lambda
+```
+Of course for an actual Lambda that has real use, _please_ name it something more descriptive and identifiable by other devs.
+
+## Add a handler definition 
+
+As we discussed earlier, a Lambda function calls a handler in our code when triggered. Our next step will be to define and implement that handler function.
+
+First, create a Python file named `handler.py` - our handler function definition will reside here. If you choose to name it something else, keep track of the name for the next step.
+
+```shell
+touch handler.py
+```
+
+We'll then use our favorite text editor (perhaps [Neovim](https://neovim.io/)?) to define implement the handler. For this example, we'll have our handler do two things:
+1. Echo the key-value pairs in the event payload
+2. Return information about our current IP Address 
+
+```py
+import json
+import requests
+
+def lambda_handler(event, context):
+    for key in event.keys():
+        print(f"{key}: {event[key]}")
+
+    with requests.get("https://ipinfo.io") as response:
+        response.raise_for_status()
+        return response.json()
+```
+A neat feature to note is that all variables defined _outside_ the handler function are cached (for some period of time) between Lambda executions. While this cache isn't particularly stable, we can still leverage cached variables for things like reusing connections to servers. Our handler here is simple enough, so we won't be using this feature.
+
+<Callout emoji="⚠️">
+If you're using Python's `logging` module, the base Lambda container image defines its own stream handler for root logger on top of any handlers you define manually. You'll want to disable log propagation to avoid log message duplication.
+
+```py
+import logging
+
+logger = logging.getLogger(__name__)
+logger.propagate = False # don't propagate messages to root logger
+```
+</Callout>
+
+
+## Define the Docker container image
+
+While there are multiple ways to package your Lambda function, we'll use a [container-based approach](https://docs.aws.amazon.com/lambda/latest/dg/python-image.html) - mainly as the alternative [archive-based](https://docs.aws.amazon.com/lambda/latest/dg/python-package.html) approach is error-prone when working with third-party Python packages. 
+
+AWS Lambda offers multiple ways to define a container image, but we'll take the simplest route and start from the offical [AWS Lambda base images](https://github.com/aws/aws-lambda-base-images/tree/python3.12) for Python. We'll use the base image for Python 3.12 in this tutorial, but you should use the image for your Python version. 
+
+Here's what our Dockerfile would look like for running this Lambda.
+```dockerfile
+FROM public.ecr.aws/lambda/python:3.12
+
+RUN pip install requests 
+COPY handler.py ${LAMBDA_TASK_ROOT}
+CMD [ "handler.lambda_handler" ]
+```
+The image recipe above contains three steps:
+1. Install the `requests` package, as needed by our handler function. Additional Python packages can also be installed at this step.
+2. Copy the handler definition `handler.py` into the Lambda working directory given by the `LAMBDA_TASK_ROOT` folder. You can see the list of Lambda specific environment variables in the [base image definition](https://github.com/aws/aws-lambda-base-images/blob/python3.12/arm64/Dockerfile.python3.12).
+3. Tell the container that the handler function is called `lambda_handler` and can be found in `handler.py`. More generally, this step's input should be `<handler_source_file>.<handler_function_name>` - so your command will be different if you named your Python file or handler function differently.
+
+And that's it for the image definition! We'll go ahead and build this image using Docker to make sure everything looks correct.
+
+```shell
+docker build -t my-lambda-image .
+```
+
+Everything should build correctly if your setup is valid, and we can move onto the next step.
+
+<Callout emoji="⚠️">
+You may have to install additional libraries for your Lambda based on what third-party packages you use (for example, [Kerberos](https://github.com/krb5/krb5)). The base image derives from [Amazon Linux 2023](https://docs.aws.amazon.com/linux/al2023/ug/minimal-container.html), so if a library is not included in [AL2023's package repository](https://docs.aws.amazon.com/linux/al2023/release-notes/all-packages-AL2023.5.html), then you may have to install it from source.
+</Callout> 
+
+## Testing our Docker container
+
+At this point, we should have two files in the `my-lambda` directory.
+- `handler.py` which defines the handler function for the Lambda
+- `Dockerfile` which defines the container image creation recipe
+
+```shell
+my-lambda
+├── Dockerfile
+└── handler.py
+```
+
+A benefit of using the offical AWS base image is that we can test our Lambda locally to make sure it runs correctly in the containerized setup. First, run the container, making sure to expose port `8080` to your local environment.
+
+```shell
+docker run -p 8080:8080 my-lambda-image
+```
+
+<Callout emoji="💡">
+If your Lambda accesses other AWS services like S3 or RDS, you will need to set environment variables with your AWS Credentials when you run the container locally - otherwise your Lambda probably won't work properly. 
+
+However you will not need to do this in production - each AWS Lambda runs with a specific IAM role that can be assigned credentials with permissions to access necessary services. The requisite credentials will be set by default in the production environment to match the IAM role.
+</Callout>
+
+Then in another terminal window, we are going to send a HTTP post request to the endpoint at port `8080` to trigger our Lambda. This post request will include our event payload, which for our example will just contain a set of random keys and values.
+
+```shell
+curl -XPOST "http://localhost:8080/2015-03-31/functions/function/invocations" -d \
+'{"key1": 1, "key2": -3.14159265, "key3": {"innerkey": "hello!"}}'
+```
+
+In your terminal window running the Docker container, you should observe an output that looks a bit like this:
+```
+09 Aug 2024 15:22:28,064 [INFO] (rapid) exec '/var/runtime/bootstrap' (cwd=/var/task, handler=)
+09 Aug 2024 15:24:49,199 [INFO] (rapid) INIT START(type: on-demand, phase: init)
+START RequestId: 6fa7492a-5313-478f-8193-1c6ecc5e0bb1 Version: $LATEST
+09 Aug 2024 15:24:49,199 [INFO] (rapid) The extension's directory "/opt/extensions" does not exist, assuming no extensions to be loaded.
+09 Aug 2024 15:24:49,199 [INFO] (rapid) Starting runtime without AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN , Expected?: false
+09 Aug 2024 15:24:49,308 [INFO] (rapid) INIT RTDONE(status: success)
+09 Aug 2024 15:24:49,308 [INFO] (rapid) INIT REPORT(durationMs: 109.507000)
+09 Aug 2024 15:24:49,308 [INFO] (rapid) INVOKE START(requestId: 03bc93e8-7dcc-4bf2-bdca-d615198a48a5)
+key1: 1
+key2: -3.14159265
+key3: {'innerkey': 'hello!'}
+END RequestId: 03bc93e8-7dcc-4bf2-bdca-d615198a48a5
+REPORT RequestId: 03bc93e8-7dcc-4bf2-bdca-d615198a48a5	Init Duration: 0.11 ms	Duration: 201.31 ms	Billed Duration: 202 ms	Memory Size: 3008 MB	Max Memory Used: 3008 MB	
+09 Aug 2024 15:24:49,400 [INFO] (rapid) INVOKE RTDONE(status: success, produced bytes: 0, duration: 91.613000ms)
+```
+
+There's a lot to parse here, so let's break it down by the 3 phases of each Lambda execution:
+1. **Init**: When the Lambda is triggered, the **init** phase begins, demarcated by the `INIT START` log message. In this phase, the Lambda begins to spin up and load the handler defintion file plus any [extensions](https://docs.aws.amazon.com/lambda/latest/dg/lambda-extensions.html) (which we didn't cover in this tutorial).
+2. **Invoke**: The handler function is then invoked, demarcated by the `INIT INVOKE` log message. Each invocation is given a request ID, in my case `03bc93e8-7dcc-4bf2-bdca-d615198a48a5`. Our handler function is called, which then prints out the key-value pairs and makes a GET request to [ipinfo.io](https://ipinfo.io) for information about our IP address. We'll comeback to the GET request in a bit.
+3. **Shutdown**: As everything executed smoothly, we see a graceful shutdown message and an execution report containing info like billed duration and memory used. This is part of the **shutdown** phase, where the execution is cleaned up.
+
+If you return now to your terminal window from where you sent the POST request, you should see that the JSON-formatted IP Info response was returned to the client:
+```json
+{
+    "ip": "***.***.***.***",
+    "hostname": "**************",
+    "city": "**************",
+    "region": "New York",
+    "country": "US",
+    "loc": "*******,*******",
+    "org": "**************",
+    "postal": "*****",
+    "timezone": "America/New_York",
+    "readme": "https://ipinfo.io/missingauth"
+}
+```
+I removed some identifying information for my privacy, but your response should look similar. In general, any return value from the handler function can by routed to a number of [destinations](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async-retain-records.html#invocation-async-destinations), including other Lambda functions.
+
+
+The best part - this is all local, so you can debug any issues in your Lambda _prior_ to deployment!
+
+## Uploading our container image to ECR
+
+### Creating a repository
+Once we're satisfied with our Lambda function and are certain that everything works correctly, lets start deploying to production. The first step in this process will be uploading our container image to a repository on [AWS Elastic Container Registry](https://aws.amazon.com/ecr/).
+
+We'll need to create a **repository** to store our container images in. Navigate to the ECR page on the AWS Console and press the "Create repository" button. 
+<ImageWithCaption src={ecr_main} alt="Screenshot showing the ECR Landing page in the AWS Console, with 'Create repository' button highlighted by arrow." caption="ECR Landing page. To create new repository, click the 'Create repository' button." /> 
+
+Then lets create an ECR repository. I'll call mine "my-lambda-images" and set it to private access. Check out these [docs](https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-create.html) to learn about other configuration options.
+<ImageWithCaption src={ecr_create} alt="Screenshot showing what the ECR repository creation screen looks like." caption="ECR Repostory Creation Screen."/>
+
+### Uploading the Container Image
+Now let's return to the terminal. If you don't already, make sure you have the [AWS CLI](https://aws.amazon.com/cli/) installed and [authenticated](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html) with an IAM role that supports pushing to ECR.
+
+You will also need to login to ECR with Docker. AWS already has [docs](https://docs.aws.amazon.com/AmazonECR/latest/userguide/getting-started-cli.html#cli-authenticate-registry) on this, so make sure that is setup before continuing.
+
+<Callout emoji="⚠️">
+In the previous step, if you're using IAM Identity Center, then you will _also_ have to specify your profile name using the `--profile` option. AWS doesn't specify this unfortunately.
+```shell
+aws ecr get-login-password --region <your-region> --profile <your-profile-name>
+```
+</Callout>
+
+Let's start by tagging our container image with the repository info so Docker knows where to push it to.
+```shell
+docker tag my-lambda-image:latest [aws_account_id].dkr.ecr.[region].amazonaws.com/my-lambda-images:[tag]
+```
+The last argument after the repository URI specifies the name to tag this image with in the "my-lambda-images" repository, which can be different from your local tag name.
+
+Then all we have to do is push the tagged image to the repository. Since we tagged the image and logged in earlier, Docker will take care of the rest!
+```shell
+docker push [aws_account_id].dkr.ecr.[region].amazonaws.com/my-lambda-images:[tag]
+```
+
+Once everything is done, we should see our tagged version of the image in the AWS Console view of the "my-lambda-images" repository.
+<ImageWithCaption src={ecr_push} alt="Screenshot showing the home page for the 'my-lambda-images' ECR repostiory in the AWS Console." caption="Home page for 'my-lambda-images' repository with new image with tag 'latest' added." />
+
+## Creating our Lambda function
+
+Almost done - now we can create our Lambda function from our container image. Navigate to the Lambda page on the AWS console. You should then click on the "Create function" to create the Lambda.
+<ImageWithCaption src={lambda_main} alt="Screenshot showing the landing page for AWS Lambda the AWS Console, with the 'Create function' button highlighted." caption="Lambda landing page in the AWS Console. Click 'Create function' to create a Lambda function." />
+
+When creating your Lambda function, there are three primary options you should pay attention to:
+1. Select the "Container image" option for deploying your Lambda function
+2. Name your Lambda function whatever your prefer - fitting with the theme so far, I called mine "my-lambda".
+3. In the settings below, specify the container image to load from - the "Browse images" button is helpful in searching through ECR repositories if you have a couple already.
+4. Select the architecture on which the Lambda should run. 
+
+<Callout emoji="🚨">
+**Important**: make sure you choose the same architecture as the computer which your Lambda container image was built on! By default, when we pull the base Python Lambda image, Docker chooses the correct version for your architecture, so we need to make sure that the Lambda also uses the same architecture. I use a M-chip MacBook, so I selected "arm64".
+</Callout>
+
+<ImageWithCaption src={lambda_create} alt="Screenshot showing the Lambda function creation page on the AWS Console." caption="Lambda function creation page in AWS Console." />
+
+Go ahead and create the function, and if everything worked smoothly, you should be presented with the "my-lambda" function home page, similar to below. Note that we can't edit the function definition since it's packaged as part of the container - this is one of the downsides of this approach.
+<ImageWithCaption src={lambda_view} alt="Screenshot of home page for the 'my-lambda' function on the AWS Console." caption="'my-lambda' function home page in the AWS Console after a succesful creation." />
+
+## Testing our Lambda
+
+Our Lambda is now created and should be ready to go!
+
+<Callout emoji="⚠️">
+If you need to change any Lambda settings, including environment variables and the max execution time, you will need to go to the "Configuration" tab on the function home page and edit these settings.
+</Callout>
+
+We can test it by navigating to the "Test" tab on the function home page and creating a test case. Below is a simple test case that sends the exact same payload as the local test we performed earlier in this tutorial.
+<ImageWithCaption src={lambda_test} alt="Screenshot of test creation tab for the 'my-lambda' function on the AWS Console." caption="Test creation page for the 'my-lambda' function in the AWS Console. This test sends the same payload as the local test performed earlier in this tutorial." />
+
+Press the "Test" button to run the test, and if everything went alright you should see a successful execution! On the same page, a pop-up will appear containing information about the test and whether it succeeded.
+
+For example, we can view the execution report and see how the statistics compare to our local test:
+```
+START RequestId: 246837cf-30cb-455b-9df4-d7052574154d Version: $LATEST
+key1: 1
+key2: -3.14159265
+key3: {'innerkey': 'hello!'}
+END RequestId: 246837cf-30cb-455b-9df4-d7052574154d
+REPORT RequestId: 246837cf-30cb-455b-9df4-d7052574154d	Duration: 117.93 ms	Billed Duration: 1464 ms	Memory Size: 128 MB	Max Memory Used: 57 MB	Init Duration: 1346.07 ms
+```
+Notice that while the lambda only took ~118 milliseconds to execute, AWS billed us for nearly 1.5 seconds! This is due to the time needed to spin up the container and get everything ready. 
+
+We can also see the return value of the Lambda function, in our case the IP Information data.
+```json
+{
+  "ip": "34.230.24.96",
+  "hostname": "ec2-34-230-24-96.compute-1.amazonaws.com",
+  "city": "Ashburn",
+  "region": "Virginia",
+  "country": "US",
+  "loc": "39.0437,-77.4875",
+  "org": "AS14618 Amazon.com, Inc.",
+  "postal": "20147",
+  "timezone": "America/New_York",
+  "readme": "https://ipinfo.io/missingauth"
+}
+```
+There is some surprisingly neat information here:
+- The `"hostname"` value looks suspiciously like a hostname for a EC2 host - it could indicate that Lambdas are implemented on EC2, or at least use similar DNS structures internally.
+- While AWS has multiple datacenters in the US East 1 region, it looks like this specific execution was ran from the [Ashburn, VA](https://www.datacenterknowledge.com/hyperscalers/amazon-adding-cloud-capacity-in-northern-virginia) center. It doesn't look like this changes between executions, but I haven't tested this rigorously.
+- I noticed the IP changes every so often, which means AWS (probably) dynamically assigns publicly routable IP addresses. I'd be curious to know exactly how Lambda functions have IPs assigned - it's not like they use [DHCP](https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol) for virtualized containers. I figure though that's an implementation detail that we're not meant to see.
+
+# Conclusion and Next Steps
+
+And that's it! We've launched a simple Python-based Lambda function with Docker. AWS Lambdas are a fairly versatile tool, and there's a bunch more you can explore:
+- Connecting your Lambda to other AWS services using [`boto3`](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
+- Creating [triggers](https://docs.aws.amazon.com/lambda/latest/dg/lambda-services.html) for your Lambda function using services like AWS [EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html), [SQS](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html), or even your self-hosted [Kafka](https://docs.aws.amazon.com/lambda/latest/dg/with-kafka.html) queue.
+- Playing with your configuration to tune function runtime and memory usgae - especially since AWS isn't cheap 💸.

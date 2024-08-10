@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Inter_Tight } from "next/font/google";
 import "./globals.css";
 import "katex/dist/katex.min.css";
+import '@wooorm/starry-night/style/both';
 
 const inter_tight = Inter_Tight({ subsets: ["latin"] });
 

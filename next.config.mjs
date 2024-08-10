@@ -2,8 +2,10 @@ import createMDX from "@next/mdx";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkMath from "remark-math";
+import remarkToc from "remark-toc";
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
+import rehypeStarryNight from 'rehype-starry-night'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -18,16 +20,26 @@ function remarkMdxFrontmatterWithOptions() {
   });
 }
 
+function remarkTocWithOptions() {
+  return remarkToc({
+    tight: true,
+    maxDepth: 2,
+    ordered: true
+  });
+}
+
 const withMDX = createMDX({
   options: {
     remarkPlugins: [
       remarkFrontmatter,
       remarkMdxFrontmatterWithOptions,
       remarkMath,
+      remarkTocWithOptions 
     ],
     rehypePlugins: [
         rehypeKatex,
         rehypeSlug,
+        rehypeStarryNight
     ],
   },
 });

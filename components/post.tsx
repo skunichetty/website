@@ -40,7 +40,7 @@ interface ImageWithCaptionProps {
 export function PostHeader({ title, date }: PostHeaderProps) {
   return (
     <div className="mb-4">
-      <h1 className="sm:text-5xl text-3xl font-bold">{title}</h1>
+      <h1 className="sm:text-5xl text-3xl font-bold mb-2">{title}</h1>
       <h4 className="text-sm text-gray-600 dark:text-gray-400">
         {date.toLocaleDateString()}
       </h4>
@@ -50,8 +50,8 @@ export function PostHeader({ title, date }: PostHeaderProps) {
 
 export function Callout({ emoji, children }: CalloutProps) {
   return (
-    <div className="flex flex-row items-center px-6 pb-5 pt-2 border-2 border-stone-900 dark:border-stone-100 my-4 mx-8 bg-stone-300 dark:bg-stone-900 rounded-2xl">
-      <p className="text-2xl mt-3">{emoji}</p>
+    <div className="flex flex-row items-center sm:px-6 px-2 pb-5 pt-2 border-2 border-stone-900 dark:border-stone-100 my-4 sm:mx-8 mx-2 bg-stone-300 dark:bg-stone-900 rounded-2xl overflow-x-scroll">
+      <p className="sm:block hidden text-2xl mt-3">{emoji}</p>
       <div className="px-5 col-span-2">{children}</div>
     </div>
   );
