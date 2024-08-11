@@ -35,6 +35,12 @@ interface ImageWithCaptionProps {
   src: string | StaticImageData;
   alt: string;
   caption: string;
+  allowInvert: boolean;
+}
+
+interface PostHeroProps {
+  src: string | StaticImageData;
+  alt: string;
 }
 
 export function PostHeader({ title, date }: PostHeaderProps) {
@@ -88,12 +94,22 @@ export function BlockEquation({ latex }: BlockEquationProps) {
   return <div ref={body} className="mt-3 flex flex-row justify-center"></div>;
 }
 
-export function ImageWithCaption({ src, alt, caption }: ImageWithCaptionProps){
+export function ImageWithCaption({ src, alt, caption, allowInvert }: ImageWithCaptionProps){
   return (
     <div className="flex flex-col items-center">
       <div className="max-w-screen-md text-center sm:my-10 my-3">
-        <Image className="sm:px-5 dark:invert-0 invert mb-2" src={src} alt={alt} /> 
+        <Image className={`sm:px-5 mb-2 ${!allowInvert || "dark:invert-0 invert"}`} src={src} alt={alt} /> 
         <p className="sm:text-sm text-xs dark:text-gray-400 text-gray-600">{caption}</p>
+      </div>
+    </div>
+  );
+}
+
+export function PostHero({ src, alt}: PostHeroProps){
+  return (
+    <div className="flex flex-col items-center">
+      <div className="text-center sm:my-10 my-3">
+        <Image className="mb-2" src={src} alt={alt} /> 
       </div>
     </div>
   );

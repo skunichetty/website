@@ -1,7 +1,7 @@
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
 import Image from "next/image";
-import { PostHeader, Callout, BlockEquation, Example, Definition, ImageWithCaption } from "@/components/post";
+import { PostHeader, Callout, BlockEquation, Example, Definition, ImageWithCaption, PostHero } from "@/components/post";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -32,12 +32,12 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </Link>
     ),
     code: (props) => (
-      <code className={`mr-1 bg-stone-850 dark:bg-stone-800 rounded-md ${props.className}`}> 
+      <code className={`rounded-md ${props.className}`}> 
          {props.children}
        </code>
     ),
     pre: ({children}) => (
-       <pre className="sm:text-base text-xs dark:bg-stone-800 bg-stone-850 rounded-md p-4 mx-1 mt-3 overflow-x-scroll">
+       <pre className="sm:text-base text-xs dark:bg-stone-800 bg-stone-100 rounded-md p-4 mx-1 mt-3 overflow-x-scroll">
          {children}
        </pre>
     ),
@@ -53,6 +53,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     Definition,
     ImageWithCaption,
     Image,
+    PostHero,
     ...components,
   };
 }

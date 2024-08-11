@@ -74,10 +74,10 @@ Steps 1 and 2 above form the process of **training** a machine learning model - 
 To classify new data, the model just has to identify any patterns that exist, and then predict the label that correspond to those patterns.
 
 <ImageWithCaption 
-    className="dark:invert-0 invert"
     src={training_image}
     alt="Comparison of workflows between traditional and machine learning approaches."
     caption="Comparison of label prediction strategies, contrasting traditional and machine learning based approaches. Image by author." 
+    allowInvert={true}
 />
 
 The central requirement to training a model is access to historical data, which we collect as part of a training dataset. A **training dataset** is a collection of **training examples** (also called **examples**) that describe past occurrences of the phenomena we'd like to make a prediction for. Each example in the training dataset has two parts:
@@ -117,6 +117,7 @@ The goal in a supervised machine learning task is to _train_ the model to recogn
     src={model_image}
     alt="Summary of supervised machine learning approach in flow-diagram form."
     caption="Overview of Supervised Machine Learning setup. Image by author."
+    allowInvert={true}
 />
 
 In the next part (coming soon), we'll formalize this intuition into mathematics and discuss how ERM presents us with a framework that can describe the training process behind a machine learning algorithm.
