@@ -1,10 +1,10 @@
-import Footer from "@/components/footer";
-import Navbar, { NavbarItem } from "@/components/navbar";
+import Footer from "@/components/server/footer";
+import Navbar, { NavbarItem } from "@/components/client/navbar";
 import type { Metadata } from "next";
 import { Inter_Tight } from "next/font/google";
 import "./globals.css";
 import "katex/dist/katex.min.css";
-import '@wooorm/starry-night/style/both';
+import "@wooorm/starry-night/style/both";
 
 const inter_tight = Inter_Tight({ subsets: ["latin"] });
 
