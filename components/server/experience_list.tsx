@@ -133,8 +133,6 @@ export default async function ExperienceList() {
     cache: "force-cache",
   });
 
-  console.log(response.headers);
-
   const items = await response
     .json()
     .then((experiences: RawExperienceItemProps[]) =>

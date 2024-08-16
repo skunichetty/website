@@ -2,7 +2,7 @@ import { readFile, readdir } from "fs/promises";
 import path from "path";
 import Link from "next/link";
 import { dateComparator } from "@/app/utils";
-import { PostMetadata } from "@/components/post";
+import { PostMetadata } from "@/components/client/post";
 import matter from "gray-matter";
 
 interface RawPostMetadata {
@@ -21,18 +21,18 @@ async function getPosts() {
     .map((entry) => {
       return {
         fullpath: path.join(entry.parentPath, entry.name),
-        slug: entry.name
+        slug: entry.name,
       };
     });
 
   const raw_metadata: RawPostMetadata[] = await Promise.all(
-    folders.map(async ({fullpath, slug}) => {
+    folders.map(async ({ fullpath, slug }) => {
       const filename = `${fullpath}/page.mdx`;
       const contents = {
         ...matter(await readFile(filename)).data,
-        slug
+        slug,
       } as RawPostMetadata;
-      return contents; 
+      return contents;
     })
   );
 
@@ -53,13 +53,7 @@ async function getPosts() {
     });
 }
 
-function PostInfo({
-  title,
-  date,
-  editDate,
-  slug,
-  description,
-}: PostMetadata) {
+function PostInfo({ title, date, editDate, slug, description }: PostMetadata) {
   return (
     <div className="block py-2">
       <Link
