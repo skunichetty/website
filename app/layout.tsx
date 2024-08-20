@@ -1,5 +1,6 @@
 import Footer from "@/components/server/footer";
-import Navbar, { NavbarItem } from "@/components/client/navbar";
+import Navbar from "@/components/client/navbar";
+import { NavbarItem } from "@/components/server/navbar_static";
 import type { Metadata } from "next";
 import { Inter_Tight } from "next/font/google";
 import "./globals.css";
