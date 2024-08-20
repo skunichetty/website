@@ -6,12 +6,16 @@ import remarkToc from "remark-toc";
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
 import rehypeStarryNight from 'rehype-starry-night'
+import NextBundleAnalyzer from "@next/bundle-analyzer";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
   output: "export",
   images: { unoptimized: true },
+  experimental: {
+    optimizePackageImports: ['katex'],
+  },
 };
 
 function remarkMdxFrontmatterWithOptions() {
@@ -44,5 +48,9 @@ const withMDX = createMDX({
   },
 });
 
+const withBundleAnalyzer = NextBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 // Wrap MDX and Next.js config with each other
-export default withMDX(nextConfig);
+export default withBundleAnalyzer(withMDX(nextConfig));

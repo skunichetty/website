@@ -2,17 +2,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
-import Icon from "./icon";
+import Icon from "@/components/server/icon";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { NavbarProps, Logo, DesktopNavbarItem } from "../server/navbar_static";
 
 const DELAY_FACTOR = 0.2;
 
-interface NavbarItemProps {
-  title: string;
-  href: string;
-  active: boolean;
-}
 
 interface NavbarItemDropdownProps {
   title: string;
@@ -20,28 +16,6 @@ interface NavbarItemDropdownProps {
   active: boolean;
   timeline: gsap.core.Timeline | null;
   index: number;
-}
-
-export interface NavbarItem {
-  title: string;
-  href: string;
-}
-
-interface NavbarProps {
-  links: NavbarItem[];
-}
-
-function NavbarRowItem({ title, href, active }: NavbarItemProps) {
-  return (
-    <Link
-      className={`font-bold ${
-        active ? "" : "text-gray-600 dark:text-gray-400"
-      } hover:text-blue-500 transition`}
-      href={href}
-    >
-      {title}
-    </Link>
-  );
 }
 
 function NavbarDropdownItem({
@@ -75,17 +49,6 @@ function NavbarDropdownItem({
         <Icon name="arrow-right-sharp" /> {title}
       </Link>
     </div>
-  );
-}
-
-function Logo() {
-  return (
-    <Link
-      href="/"
-      className="sm:text-xl text-md font-bold text-pretty hover:text-blue-500 transition"
-    >
-      skunichetty.dev
-    </Link>
   );
 }
 
@@ -126,7 +89,7 @@ export default function Navbar({ links }: NavbarProps) {
     <ul className="flex-row sm:flex hidden divide-x-2 divide-gray-400 text-gray-600 dark:text-gray-400">
       {links.map((item) => (
         <li key={item.title} className="px-3">
-          <NavbarRowItem
+          <DesktopNavbarItem
             title={item.title}
             href={item.href}
             active={pathname === item.href}
