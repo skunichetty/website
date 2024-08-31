@@ -30,7 +30,8 @@
     "remark-frontmatter": "^5.0.0",
     "remark-math": "^6.0.0",
     "remark-mdx-frontmatter": "^4.0.0",
-    "remark-toc": "^9.0.0"
+    "remark-toc": "^9.0.0",
+    "webpack": "^5.94.0"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^14.2.5",
