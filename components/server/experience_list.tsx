@@ -37,9 +37,11 @@ function fmt_location(city: string, state: string) {
 
     case "California":
       abbreviatedState = "CA";
+      break;
 
     case "Illinois":
       abbreviatedState = "IL";
+      break;
 
     default:
       break;
