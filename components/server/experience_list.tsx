@@ -11,6 +11,8 @@ interface RawExperienceItemProps {
   city: string;
   state: string;
   current: boolean;
+  gradient_start: string;
+  gradient_end: string;
 }
 
 interface ExperienceItemPositionProps {
@@ -24,9 +26,19 @@ interface ExperienceItemPositionProps {
   current: boolean;
 }
 
+interface ExperienceItemViewProps {
+  company_name: string;
+  company_url?: string;
+  start_date: Date;
+  end_date?: Date;
+  positions: ExperienceItemPositionProps[];
+}
+
 interface ExperienceItemProps {
   company_name: string;
   company_url?: string;
+  gradient_start: string;
+  gradient_end: string;
   start_date: Date;
   end_date?: Date;
   positions: ExperienceItemPositionProps[];
@@ -86,7 +98,11 @@ function minDate(date1: Date, date2: Date) {
 }
 
 function maxDate(date1: Date, date2: Date) {
-  return dateComparator(date1, date2, false) >= 0 ? date1 : date2;
+  return dateComparator(date1, date2, true) >= 0 ? date1 : date2;
+}
+
+function asId(title: string) {
+  return title.toLowerCase().replaceAll(" ", "-");
 }
 
 function CompanyTitle({ company_name, company_url }: CompanyTitleProps) {
@@ -139,75 +155,139 @@ export function ExperienceItemPositionView({
   );
 }
 
-export function ExperienceItem({
+function ExperienceItemSinglePositionView({
   company_name,
   company_url,
   start_date,
   end_date,
   positions,
-}: ExperienceItemProps) {
-  if (positions.length == 1) {
-    const position = positions[0];
-    return (
-      <div className="flex flex-row justify-center">
-        <div className="grid grid-cols-6 grid-rows-1 w-full">
-          <div className="col-span-4">
-            <h1 className="font-bold">
-              {position.position_name}
-              <span className="text-blue-400 dark:text-blue-500 ml-2">
-                {position.current ? "(Current)" : ""}
-              </span>
-            </h1>
-            <div className="dark:text-gray-400 text-gray-500 text-sm">
-              <CompanyTitle
-                company_name={company_name}
-                company_url={company_url}
-              />
-            </div>
-          </div>
-          <div className="col-span-2 text-right">
-            <DateRangeView start_date={start_date} end_date={end_date} />
-            <p className="text-gray-500 dark:text-gray-400 md:text-sm text-xs">
-              {fmt_location(position.city, position.state)}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  } else {
-    return (
-      <div className="flex flex-col">
-        <div className="flex flex-row justify-between mb-1">
-          <div>
+}: ExperienceItemViewProps) {
+  const position = positions[0];
+  return (
+    <div className="flex flex-row justify-center w-full">
+      <div className="grid grid-cols-6 grid-rows-1 w-full">
+        <div className="col-span-4">
+          <h1 className="font-bold">
+            {position.position_name}
+            <span className="text-blue-400 dark:text-blue-500 ml-2">
+              {position.current ? "(Current)" : ""}
+            </span>
+          </h1>
+          <div className="dark:text-gray-400 text-gray-500 text-sm">
             <CompanyTitle
               company_name={company_name}
               company_url={company_url}
             />
-            <p className="text-gray-500 dark:text-gray-400">Multiple Roles</p>
-          </div>
-          <div>
-            <DateRangeView start_date={start_date} end_date={end_date} />
-            <p className="text-gray-500 dark:text-gray-400 md:text-sm text-xs text-right">
-              {fmt_location(positions[0].city, positions[0].state)}
-            </p>
           </div>
         </div>
-        <ul className="ml-3">
-          {positions
-            .sort((a, b) => {
-              const a_date = a.end_date == undefined ? new Date() : a.end_date;
-              const b_date = b.end_date == undefined ? new Date() : b.end_date;
-              return dateComparator(a_date, b_date, false);
-            })
-            .map((position) => (
-              <li key={position.id} className="py-1 ml-2">
-                <ExperienceItemPositionView {...position} />
-              </li>
-            ))}
-        </ul>
+        <div className="col-span-2 text-right">
+          <DateRangeView start_date={start_date} end_date={end_date} />
+          <p className="text-gray-500 dark:text-gray-400 md:text-sm text-xs">
+            {fmt_location(position.city, position.state)}
+          </p>
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
+function ExperienceItemMultiplePositionsView({
+  company_name,
+  company_url,
+  start_date,
+  end_date,
+  positions,
+}: ExperienceItemViewProps) {
+  return (
+    <div className="flex flex-col w-full">
+      <div className="flex flex-row justify-between mb-1">
+        <div>
+          <CompanyTitle company_name={company_name} company_url={company_url} />
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
+            Multiple Roles
+          </p>
+        </div>
+        <div>
+          <DateRangeView start_date={start_date} end_date={end_date} />
+          <p className="text-gray-500 dark:text-gray-400 md:text-sm text-xs text-right">
+            {fmt_location(positions[0].city, positions[0].state)}
+          </p>
+        </div>
+      </div>
+      <ul className="">
+        {positions
+          .sort((a, b) => {
+            const a_date = a.end_date == undefined ? new Date() : a.end_date;
+            const b_date = b.end_date == undefined ? new Date() : b.end_date;
+            return dateComparator(a_date, b_date, false);
+          })
+          .map((position) => (
+            <li key={position.id} className="py-1">
+              <ExperienceItemPositionView {...position} />
+            </li>
+          ))}
+      </ul>
+    </div>
+  );
+}
+
+export function ExperienceItem({
+  company_name,
+  company_url,
+  gradient_start,
+  gradient_end,
+  start_date,
+  end_date,
+  positions,
+}: ExperienceItemProps) {
+  const company_id = asId(company_name);
+  return (
+    <div className="flex flex-row gap-2">
+      <svg width="60" height="60">
+        <defs>
+          <linearGradient
+            id={`grad-${company_id}`}
+            x1="0%"
+            y1="0%"
+            x2="100%"
+            y2="100%"
+          >
+            <stop
+              offset="0%"
+              style={{ stopColor: gradient_start, stopOpacity: 1 }}
+            />
+            <stop
+              offset="100%"
+              style={{ stopColor: gradient_end, stopOpacity: 1 }}
+            />
+          </linearGradient>
+        </defs>
+        <rect
+          width="45"
+          height="45"
+          rx="4"
+          style={{ fill: `url(#grad-${company_id})` }}
+        />
+      </svg>
+      {positions.length == 1 ? (
+        <ExperienceItemSinglePositionView
+          company_name={company_name}
+          company_url={company_url}
+          start_date={start_date}
+          end_date={end_date}
+          positions={positions}
+        />
+      ) : (
+        <ExperienceItemMultiplePositionsView
+          company_name={company_name}
+          company_url={company_url}
+          start_date={start_date}
+          end_date={end_date}
+          positions={positions}
+        />
+      )}
+    </div>
+  );
 }
 
 interface ExperienceListProps {
@@ -216,7 +296,7 @@ interface ExperienceListProps {
 
 export function ExperienceListView({ experiences }: ExperienceListProps) {
   return (
-    <ul className="sm:max-w-xl max-w-sm relative border-l-2 border-blue-500">
+    <ul className="sm:max-w-2xl max-w-sm">
       {experiences
         .sort((a, b) => {
           const a_date = a.end_date == undefined ? new Date() : a.end_date;
@@ -224,8 +304,7 @@ export function ExperienceListView({ experiences }: ExperienceListProps) {
           return dateComparator(a_date, b_date, false);
         })
         .map((experience) => (
-          <li key={experience.company_name} className="my-2 ml-6">
-            <div className="absolute w-2.5 h-2.5 dark:bg-blue-500 bg-blue-400 rounded-full mt-1.5 -left-1.5"></div>
+          <li key={experience.company_name} className="my-2">
             <ExperienceItem {...experience} />
           </li>
         ))}
@@ -242,7 +321,6 @@ export default async function ExperienceList() {
       Authorization: `Bearer ${apiKey}`,
       apikey: apiKey,
     },
-    cache: "force-cache",
   });
 
   const items = await response
@@ -264,6 +342,8 @@ export default async function ExperienceList() {
           const company: ExperienceItemProps = {
             company_name: experience.company_name,
             company_url: experience.company_url,
+            gradient_start: experience.gradient_start,
+            gradient_end: experience.gradient_end,
             start_date: position.start_date,
             end_date: position.end_date,
             positions: [position],
