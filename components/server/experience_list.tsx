@@ -13,6 +13,7 @@ interface RawExperienceItemProps {
   current: boolean;
   gradient_start: string;
   gradient_end: string;
+  description?: string;
 }
 
 interface ExperienceItemPositionProps {
@@ -24,6 +25,7 @@ interface ExperienceItemPositionProps {
   city: string;
   state: string;
   current: boolean;
+  description?: string;
 }
 
 interface ExperienceItemViewProps {
@@ -121,9 +123,17 @@ function CompanyTitle({ company_name, company_url }: CompanyTitleProps) {
 
 function DateRangeView({ start_date, end_date }: DateRangeViewProps) {
   return (
-    <div className="dark:text-gray-400 text-gray-500">
+    <div className="dark:text-gray-400 text-gray-500 font-semibold">
       {fmt_date(start_date)}
       {end_date != undefined ? ` - ${fmt_date(end_date)}` : " - Present"}
+    </div>
+  );
+}
+
+function DescriptionBox({ description }: { description: string }) {
+  return (
+    <div className="text-gray-500 dark:text-gray-400 text-sm">
+      <p>{description}</p>
     </div>
   );
 }
@@ -133,24 +143,31 @@ export function ExperienceItemPositionView({
   start_date,
   end_date,
   current,
+  description,
 }: ExperienceItemPositionProps) {
+  console.log(description);
   return (
-    <div className="flex flex-row justify-center">
-      <div className="grid grid-cols-6 grid-rows-1 w-full">
-        <div className="col-span-3">
-          <h1 className="font-bold text-sm">
-            {position_name}
-            <span className="text-xs text-gray-600 dark:text-gray-400 ml-2">
-              {current ? "Current" : ""}
-            </span>
-          </h1>
-        </div>
-        <div className="col-span-3 text-right">
-          <div className="md:text-sm text-xs flex flex-row justify-end">
-            <DateRangeView start_date={start_date} end_date={end_date} />
+    <div className="w-full">
+      <div className="flex flex-row justify-center mt-1 w-full">
+        <div className="grid grid-cols-6 grid-rows-1 w-full">
+          <div className="col-span-3">
+            <h1 className="font-bold text-sm">
+              {position_name}
+              <span className="text-xs text-gray-600 dark:text-gray-400 ml-2">
+                {current ? "Current" : ""}
+              </span>
+            </h1>
+          </div>
+          <div className="col-span-3 text-right">
+            <div className="md:text-sm text-xs flex flex-row justify-end">
+              <DateRangeView start_date={start_date} end_date={end_date} />
+            </div>
           </div>
         </div>
       </div>
+      {description != undefined ? (
+        <DescriptionBox description={description} />
+      ) : null}
     </div>
   );
 }
@@ -164,29 +181,34 @@ function ExperienceItemSinglePositionView({
 }: ExperienceItemViewProps) {
   const position = positions[0];
   return (
-    <div className="flex flex-row justify-center w-full">
-      <div className="grid grid-cols-6 grid-rows-1 w-full">
-        <div className="col-span-4">
-          <h1 className="font-bold">
-            {position.position_name}
-            <span className="text-blue-400 dark:text-blue-500 ml-2">
-              {position.current ? "(Current)" : ""}
-            </span>
-          </h1>
-          <div className="dark:text-gray-400 text-gray-500 text-sm">
-            <CompanyTitle
-              company_name={company_name}
-              company_url={company_url}
-            />
+    <div className="w-full">
+      <div className="flex flex-row justify-center w-full mb-1">
+        <div className="grid grid-cols-6 grid-rows-1 w-full">
+          <div className="col-span-4">
+            <h1 className="font-bold">
+              {position.position_name}
+              <span className="text-blue-400 dark:text-blue-500 ml-2">
+                {position.current ? "(Current)" : ""}
+              </span>
+            </h1>
+            <div className="dark:text-gray-400 text-gray-500 text-sm">
+              <CompanyTitle
+                company_name={company_name}
+                company_url={company_url}
+              />
+            </div>
+          </div>
+          <div className="col-span-2 text-right">
+            <DateRangeView start_date={start_date} end_date={end_date} />
+            <p className="text-gray-500 dark:text-gray-400 md:text-sm text-xs">
+              {fmt_location(position.city, position.state)}
+            </p>
           </div>
         </div>
-        <div className="col-span-2 text-right">
-          <DateRangeView start_date={start_date} end_date={end_date} />
-          <p className="text-gray-500 dark:text-gray-400 md:text-sm text-xs">
-            {fmt_location(position.city, position.state)}
-          </p>
-        </div>
       </div>
+      {position.description != undefined ? (
+        <DescriptionBox description={position.description} />
+      ) : null}
     </div>
   );
 }
@@ -304,7 +326,7 @@ export function ExperienceListView({ experiences }: ExperienceListProps) {
           return dateComparator(a_date, b_date, false);
         })
         .map((experience) => (
-          <li key={experience.company_name} className="my-2">
+          <li key={experience.company_name} className="my-3">
             <ExperienceItem {...experience} />
           </li>
         ))}
