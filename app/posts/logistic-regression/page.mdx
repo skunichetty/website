@@ -1,0 +1,169 @@
+---
+title: "Logistic Regression: A Probability Theoretic Approach"
+date: 3/08/2025
+slug: logistic-regression
+keywords:
+  [
+    Machine Learning,
+    Artificial Intelligence,
+    Probability Theory,
+    Cross-Entropy Loss,
+    Entropy,
+    Loss,
+  ]
+description: A first-principles derivation of logistic regression using probability theory.
+---
+
+<PostHeader title={metadata.title} date={new Date(metadata.date)} />
+
+# Introduction
+
+[Logistic regression](https://en.wikipedia.org/wiki/Logistic_regression) is one of the first binary classification models that most people learn when starting off in machine learning. As a linear model, it's easiest to reason about, yet still powerful enough to drive key findings.
+
+What I find very fascinating though is how steeped logistic regression is in probability theory - and how starting from basic principles (random variables, distributions, probability rules), we can actually derive the rules that define logistic regression.
+
+This blog post will cover exactly how we can derive logistic regression through a probabilistic lens - and in the process, hopefully you'll gain some key insights into how this simple algorithm actually works.
+
+# Probability Theoretic Supervised Machine Learning
+
+Let's start by generally supervised machine learning tasks using **probability theory**. Let us define:
+
+- $$\vec{X}$$ be a **random feature vector** with $$d$$ components - aka where $$x_i \sim F_i$$ with $$i=1,\dots,d$$. $$F_i$$ is the (arbitrary) **probability distribution** of the $$i$$th feature.
+- $$Y$$ be a random vector specifying the label sampled from the space of all labels. $$Y$$ is a discrete random variable for classification problems and continuous for regression problems.
+
+Inference involves predicting how the _distribution_ of labels changes when we know that we observed a specific feature vector. In other words, we are determining the distribution of labels $$Y$$ given that we observe $$\vec{X} = \vec{x}$$:
+
+<BlockEquation latex="\mathbb{P}(Y|X=\vec{x})" />
+
+Usually of course we want to predict a single label rather than a distribution. We can do so in a fairly straightforward manner - choose the label which is _most_ likely to be observed under this distribution.
+
+# Defining the Logistic Regression Model
+
+Let's translate the arbitrary case for probability theoretic supervised ML to the specifics of logistic regression:
+
+- We'll restrict the random feature vector $$\vec{X}$$ to be sampled from a real-valued space - in other words meaning each feature vector observation is a real-valued vector, $$\vec{x} \in \mathbb{R}^d$$
+- Let $$Y$$ be a discrete random variable that can either be $$\{0, 1\}$$, corresponding to negative and positive labels respectively.
+
+With that out of the way, the trick to logistic regression is defining the marginal distribution of labels as a _function_ of the feature vector we observe. More specifically:
+
+<BlockEquation latex="\mathbb{P}(Y|X=\vec{x}) = \text{Ber}(\sigma(\vec{\theta} \cdot \vec{x} + b))" />
+
+where:
+
+- $$\text{Ber}$$ is the [Bernoulli probability distribution](https://en.wikipedia.org/wiki/Bernoulli_distribution). As a recap, a Bernoulli distribution $$\text{Ber}(\gamma)$$ is a binary distribution defined so that $$\mathbb{P}(y = 1) = \gamma$$, and thus by the complement that $$\mathbb{P}(y = 0) = 1-\gamma$$.
+- $$\vec{\theta} \in \mathbb{R}^d, b \in \mathbb{R}$$ are the **parameters** of our model
+- $$\sigma$$ is the **sigmoid** function:
+
+<BlockEquation latex="\sigma(z) = \frac{1}{1+e^{-z}}" />
+
+Notice what's actually happening here - we're saying that _if_ we observe feature vector $$\vec{x} \in \mathbb{R}^d$$ randomly, then from the definition of the Bernoulli random variable:
+
+- $$\mathbb{P}(Y = 1 | \vec{X} = \vec{x}) =\sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)$$
+- $$\mathbb{P}(Y = 0 | \vec{X} = \vec{x}) =1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)$$
+
+This precisely defines the distribution of labels that we can use to make a prediction for the correct class.
+
+# Training Logistic Regression Models
+
+To train a logistic regression model, we have to learn the values of $$\vec{\theta}$$ and $$b$$ that allow us to make the best label predictions. As usual with unsupervised machine learning, we collect a **training dataset** to determine how close our model is to predicting correct labels.
+
+Under a probability theoretic view, our dataset consists of $$n$$ **independent** observations, where the $$i$$th observation consists of two values:
+
+- $$\vec{x}^{(i)} \in \mathbb{R}^n$$ as a feature vector sampled from our feature space.
+- $$y^{(i)} \in \{0, 1\}$$ as the label corresponding to the feature vector
+
+We can more concisely represent this dataset as $$S_n = \{(\vec{x}^{(i)}, y^{(i)})\}_{i=1}^n$$.
+
+## Likelihood
+
+Here is a key assumption: suppose we observed that $$y^{(i)} = 1$$ in our dataset. Then we can (reasonably) assume that $$\mathbb{P}(Y = 1 | \vec{X} = \vec{x}^{(i)}) > \mathbb{P}(Y = 0 | \vec{X} = \vec{x}^{(i)})$$. Another way to say this is that $$\mathbb{P}(Y = 1 | \vec{X} = \vec{x}^{(i)})$$ should be as large as possible.
+
+We can generalize this by saying that we'd expect that $$\mathbb{P}(Y = y^{(i)}| \vec{X} = \vec{x}^{(i)})$$ to be as large as possible for every observation $$i$$. Incidentally, we now have a metric for what constitutes a "good" set of parameters - the most appropriate parameters $$\vec{\theta}, b$$ are ones that make it as _likely_ as possible to observe the ground truth label $$y^{(i)}$$ given $$\vec{x}^{(i)}$$.
+
+This metric is formally called the **likelihood**, defined as the function $$\mathcal{L}$$ where
+
+<BlockEquation latex="\mathcal{L}(\vec{\theta}, b; S_n) = \mathbb{P}(S_n; \vec{\theta}, b)" />
+
+or that $$\mathcal{L}$$ gives us the likelihood of the parameters $$\vec{\theta}, b$$ being used to generate the dataset $$S_n$$.
+
+<Callout emoji="🚨">
+  Likelihood $$\mathcal{L}(\vec{\theta}, b; S_n)$$  is technically different from the related probability $$\mathbb{P}(S_n; \vec{\theta}, b)$$:
+  - Likelihood describes how likely some set of parameters is to generate a _fixed dataset_ (dataset is fixed)
+  - Probability describes how likely a dataset is to be sampled from a distribution given _fixed parameters_ (parameters are fixed)
+
+</Callout>
+
+Then training the model resolves to choosing $$\vec{\theta}, b$$ that maximizes $$\mathcal{L}(\vec{\theta}, b; S_n)$$ - a process called **maximum likelihood estimation**. By choosing the parameters $$\vec{\theta}, b$$ that maximize likelihood, we're choosing parameters that make it as _likely_ as possible to observe the ground truth label $$y^{(i)}$$ given $$\vec{x}^{(i)}$$ for all observations $$i$$.
+
+## Deriving the Maximum Likelihood Estimator
+
+We've now defined the core training statement for logistic regression: find $$\vec{\theta}, b$$ that maximize $$\mathcal{L}(\vec{\theta}, b; S_n)$$. In other words,
+
+<BlockEquation latex="\argmax_{\vec{\theta}, b} \mathcal{L}(\vec{\theta}, b; S_n)" />
+
+We can simplify this maximization problem further until it starts to resemble something that we can easily train using regular supervised machine learning approaches (such as [gradient descent](https://en.wikipedia.org/wiki/Gradient_descent), for example).
+
+This section is going to be a _ton_ of math, so strap in. We'll first start by first returning to an assumption you likely skipped over when reading the previous part.
+
+> Our dataset consists of $$n$$ independent observations
+
+We know that for two independent events $$A, B$$ that $$\mathbb{P}(A \cap B) = \mathbb{P}(A)\mathbb{P}(B)$$. Then the probability of observing the _entire_ dataset $$S_n$$ can be factored into the product of individual probabilities of ground truths for each observation:
+
+<BlockEquation latex="\mathcal{L}(\vec{\theta}, b; S_n) = \mathbb{P}(S_n; \vec{\theta}, b) = \prod_{i=1}^n \mathbb{P}\left[Y = y^{(i)} | X = \vec{x}^{(i)}; \vec{\theta}, b \right]" />
+
+Now there are two cases here:
+
+- $$y^{(i)} = 1$$ - in this case, $$\mathbb{P}(Y = y^{(i)} | X = \vec{x}^{(i)}; \vec{\theta}, b) = \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)$$
+- $$y^{(i)} = 0$$ - in this case, $$\mathbb{P}(Y = y^{(i)} | X = \vec{x}^{(i)}; \vec{\theta}, b) = 1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)$$
+
+as we've stated previously. We can use a neat trick with how we define our label space to combine these two cases into a single expression:
+
+<BlockEquation latex="\mathbb{P}(Y = y^{(i)} | X = \vec{x}^{(i)}; \vec{\theta}, b) = \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)^{y^{(i)}} (1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))^{1 - y^{(i)}}" />
+
+We can see here when:
+
+- $$y^{(i)} = 1$$, then $$(1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))^{1 - y^{(i)}} = 1$$, leaving only the first term in the product
+- $$y^{(i)} = 0$$, then $$\sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)^{y^{(i)}} = 1$$, leaving only the second term in the product
+
+Therefore returning to the likelihood function:
+
+<BlockEquation latex="\mathcal{L}(\vec{\theta}, b; S_n) = \prod_{i=1}^n \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)^{y^{(i)}} (1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))^{1 - y^{(i)}}" />
+
+We could stop here, but the iterated product $$\Pi$$ is super nasty to take gradients over. Luckily we have an ace up our sleeve: recall that $$\argmax_x x = \argmax_x \ln(x)$$ (over a given domain). We can apply the natural log to the likelihood $$\mathcal{L}$$ to get the **log-likelihood** $$\ell$$, where $$\ell$$ and $$\mathcal{L}$$ are maximized by the same values of $$\vec{\theta}$$ and $$b$$. Looking at the log-likelihood then:
+
+<BlockEquation latex="\ell(\vec{\theta}, b; S_n) = \ln \mathcal{L}(\vec{\theta}, b; S_n) = \ln\left[\prod_{i=1}^n \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)^{y^{(i)}} (1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))^{1 - y^{(i)}}\right]" />
+
+Applying the following log laws:
+
+- $$\ln(ab) = \ln(a) + \ln(b)$$
+- $$\ln(a/b) = \ln(a) - \ln(b)$$
+
+we can simplify the log-likelihood to:
+
+<BlockEquation latex="\ell(\vec{\theta}, b; S_n) = \sum_{i=1}^n y^{(i)} \ln(\sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)) + (1 - y^{(i)}) \ln(1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))" />
+
+This formulation of the optimization objective is something that's much nicer for gradient computation as that nasty iterated product is removed.
+
+So finally, we have the final format of the maximum likelihood estimation optimization problem that will give us the optimal parameters for the logistic regression model:
+
+<BlockEquation latex="\argmax_{\vec{\theta}, b} \ell(\vec{\theta}, b; S_n) = \argmax_{\vec{\theta}, b} \sum_{i=1}^n y^{(i)} \ln(\sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)) + (1 - y^{(i)}) \ln(1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))" />
+
+For stability reasons (among others), it is common to solve minimization problems rather than maximization problems - we can equivalently rewrite the MLE optimization problem as:
+
+<BlockEquation latex="\argmin_{\vec{\theta}, b} -\ell(\vec{\theta}, b; S_n) = \argmin_{\vec{\theta}, b} -\sum_{i=1}^n y^{(i)} \ln(\sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)) + (1 - y^{(i)}) \ln(1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))" />
+
+# Conclusion
+
+To recap, a logistic regression model is a binary classification model where distribution of labels given that we observe feature vector is a Bernoulli distribution. This Bernoulli distribution is parameterized by a linear transformation of the feature vector with the parameters $$\vec{\theta}, b$$.
+
+<BlockEquation latex="\mathbb{P}(Y|X=\vec{x}) = \text{Ber}(\sigma(\vec{\theta} \cdot \vec{x} + b))" />
+
+We can learn the optimal parameters $$\vec{\theta}, b$$ by performing maximum likelihood estimation using a dataset $$S_n$$ of $$n$$ independent observations, which simplifies to the following optimization problem:
+
+<BlockEquation latex="\argmin_{\vec{\theta}, b} -\ell(\vec{\theta}, b; S_n) = \argmin_{\vec{\theta}, b} -\sum_{i=1}^n y^{(i)} \ln(\sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)) + (1 - y^{(i)}) \ln(1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))" />
+
+There is of course an argument to be made on whether we need to know this - modern machine learning solutions abstract enough of this away so we never have to touch these details. It's easy enough to download `scikit-learn`, call `LogisticRegression.fit()`, and be done with the entire process.
+
+But abstraction is a double-edged sword - when things work, we have a _much_ simpler time managing complexity in our work. But when things fail? Abstraction hides critical details that we don't see. And what's tricky about machine learning is that failure cases are _very_ hard to track down due to the hazards of working with real data.
+
+It's here that knowing the details - for example how logistic regression (and many ML models) expect independent samples in their theoretical formulation - can be the difference between a broken model and a less broken model. So yes - I believe ML practioners shouldn't shy away from the details, no matter how complex they are.
