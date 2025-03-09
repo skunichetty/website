@@ -94,7 +94,7 @@ export function BlockEquation({ latex }: BlockEquationProps) {
   return (
     <div
       ref={body}
-      className="mt-3 px-5 justify-normal md:justify-center flex flex-row text-xs md:text-base overflow-x-scroll md:overflow-hidden"
+      className="mt-3 px-5 justify-normal md:justify-center flex flex-row text-xs md:text-base overflow-x-scroll md:overflow-visible"
     ></div>
   );
 }
