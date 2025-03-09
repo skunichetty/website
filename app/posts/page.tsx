@@ -15,7 +15,7 @@ interface RawPostMetadata {
 }
 
 async function getPosts() {
-  const entries = await readdir("app/posts", { withFileTypes: true });
+  const entries = await readdir("content", { withFileTypes: true });
   const folders = entries
     .filter((entry) => entry.isDirectory())
     .map((entry) => {
