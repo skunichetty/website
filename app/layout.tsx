@@ -15,6 +15,23 @@ export const metadata: Metadata = {
     default: "skunichetty.dev",
   },
   description: "Sachchit Kunichetty's Personal Website",
+  openGraph: {
+    type: "website",
+    siteName: "skunichetty.dev",
+    locale: "en_US",
+  },
+  robots: {
+    follow: true,
+    index: true,
+    googleBot: "index, follow",
+  },
+  category: "personal",
+  icons: [
+    {
+      type: "image/x-icon",
+      url: "/favicon.ico",
+    },
+  ],
 };
 
 export default function RootLayout({

@@ -1,7 +1,7 @@
 "use client";
 import katex from "katex";
 import { useEffect, useRef } from "react";
-import Image, {StaticImageData} from "next/image";
+import Image, { StaticImageData } from "next/image";
 
 export interface PostMetadata {
   title: string;
@@ -56,7 +56,7 @@ export function PostHeader({ title, date }: PostHeaderProps) {
 
 export function Callout({ emoji, children }: CalloutProps) {
   return (
-    <div className="flex flex-row items-center sm:px-6 px-2 pb-5 pt-2 border-2 border-stone-900 dark:border-stone-100 my-4 sm:mx-8 mx-2 bg-stone-300 dark:bg-stone-900 rounded-2xl overflow-x-scroll">
+    <div className="flex flex-row items-center sm:px-6 px-2 pb-5 pt-2 border-2 border-stone-900 dark:border-stone-100 my-4 sm:mx-8 mx-2 bg-stone-300 dark:bg-stone-900 rounded-2xl">
       <p className="sm:block hidden text-2xl mt-3">{emoji}</p>
       <div className="px-5 col-span-2">{children}</div>
     </div>
@@ -91,25 +91,41 @@ export function BlockEquation({ latex }: BlockEquationProps) {
       });
     }
   });
-  return <div ref={body} className="mt-3 flex flex-row justify-center"></div>;
+  return (
+    <div
+      ref={body}
+      className="mt-3 px-5 justify-normal md:justify-center flex flex-row text-xs md:text-base overflow-x-scroll md:overflow-hidden"
+    ></div>
+  );
 }
 
-export function ImageWithCaption({ src, alt, caption, allowInvert }: ImageWithCaptionProps){
+export function ImageWithCaption({
+  src,
+  alt,
+  caption,
+  allowInvert,
+}: ImageWithCaptionProps) {
   return (
     <div className="flex flex-col items-center">
       <div className="max-w-screen-md text-center sm:my-10 my-3">
-        <Image className={`sm:px-5 mb-2 ${!allowInvert || "dark:invert-0 invert"}`} src={src} alt={alt} /> 
-        <p className="sm:text-sm text-xs dark:text-gray-400 text-gray-600">{caption}</p>
+        <Image
+          className={`sm:px-5 mb-2 ${!allowInvert || "dark:invert-0 invert"}`}
+          src={src}
+          alt={alt}
+        />
+        <p className="sm:text-sm text-xs dark:text-gray-400 text-gray-600">
+          {caption}
+        </p>
       </div>
     </div>
   );
 }
 
-export function PostHero({ src, alt}: PostHeroProps){
+export function PostHero({ src, alt }: PostHeroProps) {
   return (
     <div className="flex flex-col items-center">
       <div className="text-center sm:my-10 my-3">
-        <Image className="mb-2" src={src} alt={alt} /> 
+        <Image className="mb-2" src={src} alt={alt} />
       </div>
     </div>
   );
