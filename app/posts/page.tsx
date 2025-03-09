@@ -75,10 +75,38 @@ function PostInfo({ title, date, editDate, slug, description }: PostMetadata) {
   );
 }
 
+function BlogPostLd({ posts }: { posts: PostMetadata[] }) {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Blog",
+          url: "https://skunichetty.dev/posts",
+          name: "skunichetty.dev",
+          description: "All Blog Posts by Sachchit Kunichetty",
+          blogPost: posts.map((post) => {
+            return {
+              "@type": "BlogPosting",
+              headline: post.title,
+              url: `https://skunichetty.dev/posts/${post.slug}`,
+              datePublished: post.date.toISOString(),
+              dateModified: post.editDate?.toISOString(),
+              description: post.description,
+            };
+          }),
+        }),
+      }}
+    />
+  );
+}
+
 export default async function PostMainPage() {
   const posts = await getPosts();
   return (
     <div>
+      <BlogPostLd posts={posts} />
       <h1 className="text-2xl font-bold">Posts</h1>
       {posts.length === 0 ? (
         <p className="text-gray-600 dark:text-gray-400">

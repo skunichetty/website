@@ -5,16 +5,14 @@ import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
-import rehypeStarryNight from 'rehype-starry-night'
+import rehypeStarryNight from "rehype-starry-night";
 import NextBundleAnalyzer from "@next/bundle-analyzer";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
-  output: "export",
-  images: { unoptimized: true },
   experimental: {
-    optimizePackageImports: ['katex'],
+    optimizePackageImports: ["katex"],
   },
 };
 
@@ -28,7 +26,7 @@ function remarkTocWithOptions() {
   return remarkToc({
     tight: true,
     maxDepth: 2,
-    ordered: true
+    ordered: true,
   });
 }
 
@@ -38,18 +36,14 @@ const withMDX = createMDX({
       remarkFrontmatter,
       remarkMdxFrontmatterWithOptions,
       remarkMath,
-      remarkTocWithOptions 
+      remarkTocWithOptions,
     ],
-    rehypePlugins: [
-        rehypeKatex,
-        rehypeSlug,
-        rehypeStarryNight
-    ],
+    rehypePlugins: [rehypeKatex, rehypeSlug, rehypeStarryNight],
   },
 });
 
 const withBundleAnalyzer = NextBundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
+  enabled: process.env.ANALYZE === "true",
 });
 
 // Wrap MDX and Next.js config with each other
