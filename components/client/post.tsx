@@ -58,7 +58,7 @@ export function Callout({ emoji, children }: CalloutProps) {
   return (
     <div className="flex flex-row items-center sm:px-6 px-2 pb-5 pt-2 border-2 border-stone-900 dark:border-stone-100 my-4 sm:mx-8 mx-2 bg-stone-300 dark:bg-stone-900 rounded-2xl">
       <p className="sm:block hidden text-2xl mt-3">{emoji}</p>
-      <div className="px-5 col-span-2">{children}</div>
+      <div className="px-5 col-span-2 overflow-auto">{children}</div>
     </div>
   );
 }
@@ -94,7 +94,7 @@ export function BlockEquation({ latex }: BlockEquationProps) {
   return (
     <div
       ref={body}
-      className="mt-3 px-5 justify-normal md:justify-center flex flex-row text-xs md:text-base overflow-x-scroll md:overflow-visible"
+      className="mt-3 px-5 justify-normal  text-xs md:text-base overflow-auto"
     ></div>
   );
 }

@@ -52,10 +52,12 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </Link>
     ),
     code: (props) => (
-      <code className={`rounded-md ${props.className}`}>{props.children}</code>
+      <code className={`rounded-md overflow-auto ${props.className}`}>
+        {props.children}
+      </code>
     ),
     pre: ({ children }) => (
-      <pre className="sm:text-base text-xs dark:bg-stone-800 bg-stone-100 rounded-md p-4 mx-1 mt-3 overflow-x-scroll">
+      <pre className="sm:text-base text-xs dark:bg-stone-800 bg-stone-100 rounded-md p-4 mx-1 mt-3 overflow-auto">
         {children}
       </pre>
     ),
