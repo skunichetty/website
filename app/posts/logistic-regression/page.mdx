@@ -20,33 +20,36 @@ import sigmoid from "./sigmoid.png";
 
 # Introduction
 
-One of my favorite ways to study machine learning is through the lens of **probability theory** - the subset of math concerned with modeling randomness and chance. The rules of probability end up providing (what I find are) elegant descriptions of the complex behavior underlying ML.
+One of my favorite ways to study machine learning is through the lens of **probability theory** - the subset of math concerned with modeling randomness and chance. In this spirit, this post will describe how [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression), a basic binary classification algorithm, can be modeled using concepts from elementary probability theory.
 
-In this spirit, this post will describe how [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression), a basic binary classification algorithm, can be modeled using concepts from elementary probability theory.
-
-We will start with a basic description of probability-theoretic supervised ML, describe logistic regression within this framework, and show how the commonly used loss function used to train logistic regression models derives from statistical methods such as [maximum likelihood estimation](https://en.wikipedia.org/wiki/Maximum_likelihood_estimation).
+We will start with a basic description of probability-theoretic supervised ML, describe logistic regression within this framework, and conclude with deriving the optimization problem used to obtain optimal parameters.
 
 # Probability Theoretic Supervised Machine Learning
 
 Before specifically addressing logistic regression, we'll first zoom out and study general supervised ML strategies through a probability-theoretic lens. Let:
 
 - $$\vec{X}$$ be a **random feature vector** with $$d$$ components. In other words, $$\vec{X}$$ is a vector where component $$X_i \sim F_i$$, where $$F_i$$ is the probability distribution of feature $$i$$.
-- $$Y$$ be a random vector specifying the label sampled from the space of all labels. $$Y$$ is a discrete random variable for classification problems and a continuous random variable for regression problems.
+- $$Y$$ be a random vector specifying a **label**. $$Y$$ is a discrete random variable for classification problems and a continuous random variable for regression problems.
 
-Under this framework, **inference** involves predicting the _distribution_ of labels given that we observed a specific feature vector. Mathematically, this means that given that we observe $$\vec{X} = \vec{x}$$, predict the marginal label distribution:
+Under this framework, **inference** involves predicting the _distribution_ of labels for a specific feature vector. Mathematically, this means that given that we observe $$\vec{X} = \vec{x}$$, predict the **conditional label distribution**:
 
-<BlockEquation latex="\mathbb{P}(Y|X=\vec{x})" />
+<BlockEquation latex="\mathbb{P}(Y|\vec{X}=\vec{x})" />
 
-If we want to predict only a _single_ label, we then need sample the label that is most likely to occur in the above distribution.
+Notice that the use of conditional probability here encodes our current knowledge. We know what the feature vector is, so we condition on it. The goal of inference is to see how our knowledge of the feature vector $$\vec{x}$$ changes the distribution of labels.
 
-The marginal label distribution $$\mathbb{P}(Y|X=\vec{x})$$ can be modeled by some arbitrary distribution $$M$$, where:
+<Callout emoji="ℹ️">
+  If we want to predict only a _single_ label, we can select the label that is
+  most likely to occur in the conditional label distribution.
+</Callout>
+
+The conditional label distribution $$\mathbb{P}(Y|\vec{X}=\vec{x})$$ can be modeled by some arbitrary distribution $$M$$, where:
 
 - $$M$$ is dependent on observed feature vector $$\vec{x}$$
 - $$M$$ is parameterized by parameter set $$\theta$$
 
-We call $$M$$ our model. To **train** the model, we must find the values or $$\theta$$ that make $$M$$ optimal for predicting reasonable label distributions.
+We call $$M$$ our **model**. To **train** the model, we must find the values of $$\theta$$ that produce the most reasonable conditional label distributions.
 
-<BlockEquation latex="\mathbb{P}(Y|X=\vec{x}) = M(\vec{x}; \theta)" />
+<BlockEquation latex="\mathbb{P}(Y|\vec{X}=\vec{x}) = M(\vec{x}; \theta)" />
 
 Enough with the general definitions for now though - let's dive into the details of how this applies to logistic regression.
 
@@ -59,31 +62,35 @@ In order to discuss logistic regression, let's start by placing some assumptions
 
 ## Mathematical Definition
 
-With that out of the way, the logistic regression defined the marginal label distribution as follows:
+Logistic regression defines the conditional label distribution as:
 
-<BlockEquation latex="\mathbb{P}(Y|X=\vec{x}) = \text{Ber}(\sigma(\vec{\theta} \cdot \vec{x} + b))" />
+<BlockEquation latex="\mathbb{P}(Y|\vec{X}=\vec{x}) = \text{Ber}(\sigma(\vec{\theta} \cdot \vec{x} + b))" />
 
 where:
 
-- $$\text{Ber}$$ is the [Bernoulli probability distribution](https://en.wikipedia.org/wiki/Bernoulli_distribution). As a recap, a Bernoulli distribution $$\text{Ber}(\gamma)$$ is a binary distribution defined so that $$\mathbb{P}(y = 1) = \gamma$$, and thus by the complement that $$\mathbb{P}(y = 0) = 1-\gamma$$.
+- $$\text{Ber}$$ is the [Bernoulli probability distribution](https://en.wikipedia.org/wiki/Bernoulli_distribution). As a recap, a Bernoulli distribution $$\text{Ber}(\gamma)$$ is a binary distribution defined so that
+  - $$\mathbb{P}(\text{Ber}(\gamma) = 1) = \gamma$$
+  - $$\mathbb{P}(\text{Ber}(\gamma) = 0) = 1-\gamma$$ (following from the complement rule)
 - $$\vec{\theta} \in \mathbb{R}^d, b \in \mathbb{R}$$ are the **parameters** of our model
 - $$\sigma$$ is the **sigmoid** function:
 
 <BlockEquation latex="\sigma(z) = \frac{1}{1+e^{-z}}" />
 
-Notice what's actually happening here - we're saying that _if_ we observe feature vector $$\vec{x} \in \mathbb{R}^d$$ randomly, then from the definition of the Bernoulli random variable:
+Notice what's actually happening here - we're saying that _if_ we observe feature vector $$\vec{x} \in \mathbb{R}^d$$ randomly, then:
 
-- $$\mathbb{P}(Y = 1 | \vec{X} = \vec{x}) =\sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)$$
-- $$\mathbb{P}(Y = 0 | \vec{X} = \vec{x}) =1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)$$
+- $$\mathbb{P}(Y = 1 | \vec{X} = \vec{x}) =\sigma(\vec{\theta} \cdot \vec{x} + b)$$
+- $$\mathbb{P}(Y = 0 | \vec{X} = \vec{x}) =1 - \sigma(\vec{\theta} \cdot \vec{x} + b)$$
 
-This precisely defines the distribution of labels that we can use to make a prediction for the correct class.
+This precisely defines the conditional label distribution in terms of $$\vec{x}$$ and the model parameters $$\vec{\theta}, b$$ as desired!
 
-## Intuition
+## Logits
 
-An alternate way of interpreting the logistic regression: it is a model that predicts the probability a given feature vector has a positive label. It does so in two steps:
+As our label distribution is binary, we really only need concern ourselves with how logistic regression predicts the probability of the positive label - the probability of the negative label follows via complement.
 
-1. computing the **logit** for the feature vector $$\vec{x}$$ using a linear combination + an intercept: $$\vec{\theta} \cdot \vec{x} + b$$
-2. thresholding this logit into the [0, 1] range using the sigmoid (or logistic) function
+Logistic regression predicts the probability a given feature vector has a positive label in two steps:
+
+1. it computes the **logit** for the feature vector $$\vec{x}$$ using a linear combination + an intercept: $$\text{logit}(\vec{x}) = \vec{\theta} \cdot \vec{x} + b$$
+2. it thresholds this logit into the [0, 1] range using the sigmoid (or logistic) function
 
 <ImageWithCaption
   src={sigmoid}
@@ -92,18 +99,25 @@ An alternate way of interpreting the logistic regression: it is a model that pre
   allowInvert={true}
 />
 
+Intuitively, it makes sense to think of logits as _raw probabilities_. They encode all the relevant information needed to obtain the probability, but just not in the right "format" until thresholded.
+
 Assuming each label is equally likely to be drawn, then
 
 - the **sign of the logit** corresponds to the sign of the predicted label
-  - $$\vec{\theta} \cdot \vec{x} + b > 0 \implies \sigma(\vec{\theta} \cdot \vec{x} + b) > 0.5 \implies $$ when logit is positive, model predicts positive label.
-  - $$\vec{\theta} \cdot \vec{x} + b < 0 \implies \sigma(\vec{\theta} \cdot \vec{x} + b) < 0.5 \implies $$ when logit is negative, model predicts negative label.
+  - $$\text{logit}(\vec{x}) = \vec{\theta} \cdot \vec{x} + b > 0 \implies \sigma(\vec{\theta} \cdot \vec{x} + b) > 0.5 \implies $$ when logit is positive, model predicts positive label is more likely.
+  - $$\text{logit}(\vec{x}) = \vec{\theta} \cdot \vec{x} + b < 0 \implies \sigma(\vec{\theta} \cdot \vec{x} + b) < 0.5 \implies $$ when logit is negative, model predicts negative label is more likely.
 - the **magnitude of the logit** describes the model's confidence in the prediction:
-  - if $$|\vec{\theta} \cdot \vec{x} + b| \gg 0 \implies \sigma(\vec{\theta} \cdot \vec{x}+ b)$$ is close to 0 or 1 $$\implies$$ the model predicts a very high or very low probability of a positive label (far from random, high confidence).
-  - if $$|\vec{\theta} \cdot \vec{x} + b| \approx 0 \implies \sigma(\vec{\theta} \cdot \vec{x}+ b)$$ is close to 0.5 $$\implies$$ the model predicts close a 50% probability of a positive label (close to random, low confidence).
+  - if $$|\text{logit}(\vec{x})| =|\vec{\theta} \cdot \vec{x} + b| \gg 0 \implies \sigma(\vec{\theta} \cdot \vec{x}+ b)$$ is close to 0 or 1 $$\implies$$ the model predicts a very high or very low probability of a positive label (far from random, high confidence).
+  - if $$|\text{logit}(\vec{x})| = |\vec{\theta} \cdot \vec{x} + b| \approx 0 \implies \sigma(\vec{\theta} \cdot \vec{x}+ b)$$ is close to 0.5 $$\implies$$ the model predicts close a 50% probability of a positive label (close to random, low confidence).
+
+One final note - it's critical to understand that as logits are computed via a linear combination of features + an intercept, a logistic regressor is a **linear model**. There are both benefits and downsides to this:
+
+- **Good**: Logistic regression is **interpretable** - we can see exactly which features contributed to the sign and magnitude of the logit, exposing what patterns the model is recognizing in the data.
+- **Bad**: Logistic regression can **underfit** to data that doesn't have a clear linear trend. In these situations, you would have to perform manual feature engineering to encode nonlinear relationships.
 
 # Training Logistic Regression Models
 
-To train a logistic regression model, we have to learn the values of $$\vec{\theta}$$ and $$b$$ that allow us to predict the most accurate marginal label distributions. As usual with supervised machine learning, we collect a **training dataset** to determine how close our model is to predicting correct labels.
+To train a logistic regression model, we have to learn the values of $$\vec{\theta}$$ and $$b$$ that allow us to predict the most accurate conditional label distributions. As usual with supervised machine learning, we collect a **training dataset** to determine how close our model is to predicting correct labels.
 
 Our dataset consists of $$n$$ **independent** observations, where the $$i$$th observation consists of two values:
 
@@ -114,18 +128,23 @@ We can more concisely represent this dataset as $$S_n = \{(\vec{x}^{(i)}, y^{(i)
 
 ## Maximum Likelihood Estimation
 
-To train a model, we need to be able to determine how "good" certain parameter choices are. One way to do so is by calculating how likely it is that the dataset $$S_n$$ was sampled from the marginal label distribution given by $$\vec{\theta}, b$$.
+To train a model, we need to be able to determine how "good" certain parameter choices are. One way to do so is by calculating how likely it is that the dataset $$S_n$$ was sampled from the conditional label distribution given by $$\vec{\theta}, b$$.
 
-- if our choice of $$\vec{\theta}, b$$ is good, then we should see that $$\mathbb{P}(Y = y^{(i)} | X = \vec{x}^{(i)}; \vec{\theta}, b)$$ is large, indicating that the labels in $$S_n$$ are likely to be sampled from the marginal label distribution.
-- if our choice of $$\vec{\theta}, b$$ is poor, then we may see that $$\mathbb{P}(Y = y^{(i)} | X = \vec{x}^{(i)}; \vec{\theta}, b)$$ is small, indicating that the labels in $$S_n$$ are unlikely to be sampled from the marginal label distribution.
+- if our choice of $$\vec{\theta}, b$$ is good, then we should see that $$\mathbb{P}(Y = y^{(i)} | X = \vec{x}^{(i)}; \vec{\theta}, b)$$ is large, indicating that the labels in $$S_n$$ are likely to be sampled from the conditional label distribution.
+- if our choice of $$\vec{\theta}, b$$ is poor, then we may see that $$\mathbb{P}(Y = y^{(i)} | X = \vec{x}^{(i)}; \vec{\theta}, b)$$ is small, indicating that the labels in $$S_n$$ are unlikely to be sampled from the conditional label distribution.
 
-The key in this logic is that $$S_n$$ is our source of truth, and training involves finding parameters that make it as likely as possible to observe that ground truth.
+The key in this logic is that $$S_n$$ is our source of truth, and training involves finding parameters that make it as likely as possible to observe that ground truth when randomly sampled.
 
-This intuition is formalized as the **likelihood** of model parameters $$\vec{\theta}, b$$, defined as the function $$\mathcal{L}$$ where
+This intuition is formalized as the **likelihood** (technically the **conditional likelihood**) of model parameters $$\vec{\theta}, b$$, defined as the function $$\mathcal{L}(\vec{\theta}, b; S_n)$$.
 
-<BlockEquation latex="\mathcal{L}(\vec{\theta}, b; S_n) = \mathbb{P}(S_n; \vec{\theta}, b)" />
+<Callout emoji="ℹ️">
+  Usually, the likelihood $$\mathcal{L}$$ captures the probability of observing
+  the _joint_ distribution $$\mathbb{P}(\vec{X}, Y)$$ rather than the
+  conditional distribution we seek to model. This is why $$\mathcal{L}$$ as
+  defined here is the **conditional likelihood**.
+</Callout>
 
-In other words, $$\mathcal{L}$$ describes how likely it was that the labels in $$S_n$$ were sampled using the parameters $$\vec{\theta}, b$$. As a higher likelihood corresponds to better parameters, we can choose the optimal values for $$\vec{\theta}, b$$ by maximizing $$\mathcal{L}(\vec{\theta}, b; S_n)$$ - a process called **maximum likelihood estimation**.
+$$\mathcal{L}$$ describes how likely it was that the labels in $$S_n$$ were sampled using the parameters $$\vec{\theta}, b$$. As a higher likelihood corresponds to better parameters, we can choose the optimal values for $$\vec{\theta}, b$$ by maximizing $$\mathcal{L}(\vec{\theta}, b; S_n)$$ - a process called **maximum likelihood estimation (MLE)**.
 
 ## Deriving a Neater Optimization Problem
 
@@ -137,20 +156,20 @@ We can simplify this maximization problem further until it starts to resemble so
 
 This section is going to be a _ton_ of math, so strap in. We'll first start by first returning to an assumption you likely skipped over when reading the previous part.
 
-> Our dataset consists of $$n$$ independent observations
+> Our dataset consists of $$n$$ **independent** observations
 
-We know that for two independent events $$A, B$$ that $$\mathbb{P}(A \cap B) = \mathbb{P}(A)\mathbb{P}(B)$$. Then the probability of observing the _entire_ dataset $$S_n$$ can be factored into the product of individual probabilities of ground truths for each observation:
+We know that for two independent events $$A, B$$ that $$\mathbb{P}(A \cap B) = \mathbb{P}(A)\mathbb{P}(B)$$. Then the probability of observing the labels in dataset $$S_n$$ can be factored into the product of individual probabilities of ground truths:
 
-<BlockEquation latex="\mathcal{L}(\vec{\theta}, b; S_n) = \mathbb{P}(S_n; \vec{\theta}, b) = \prod_{i=1}^n \mathbb{P}\left[Y = y^{(i)} | X = \vec{x}^{(i)}; \vec{\theta}, b \right]" />
+<BlockEquation latex="\mathcal{L}(\vec{\theta}, b; S_n) =\prod_{i=1}^n \mathbb{P}\left(Y = y^{(i)} | \vec{X} = \vec{x}^{(i)}; \vec{\theta}, b \right)" />
 
 Now there are two cases here:
 
-- $$y^{(i)} = 1$$ - in this case, $$\mathbb{P}(Y = y^{(i)} | X = \vec{x}^{(i)}; \vec{\theta}, b) = \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)$$
-- $$y^{(i)} = 0$$ - in this case, $$\mathbb{P}(Y = y^{(i)} | X = \vec{x}^{(i)}; \vec{\theta}, b) = 1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)$$
+- $$y^{(i)} = 1$$ - in this case, $$\mathbb{P}(Y = y^{(i)} | \vec{X} = \vec{x}^{(i)}; \vec{\theta}, b) = \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)$$
+- $$y^{(i)} = 0$$ - in this case, $$\mathbb{P}(Y = y^{(i)} | \vec{X} = \vec{x}^{(i)}; \vec{\theta}, b) = 1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)$$
 
 as we've stated previously. We can use a neat trick with how we define our label space to combine these two cases into a single expression:
 
-<BlockEquation latex="\mathbb{P}(Y = y^{(i)} | X = \vec{x}^{(i)}; \vec{\theta}, b) = \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)^{y^{(i)}} (1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))^{1 - y^{(i)}}" />
+<BlockEquation latex="\mathbb{P}(Y = y^{(i)} | \vec{X} = \vec{x}^{(i)}; \vec{\theta}, b) = \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)^{y^{(i)}} (1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))^{1 - y^{(i)}}" />
 
 We can see here when:
 
@@ -161,9 +180,11 @@ Therefore returning to the likelihood function:
 
 <BlockEquation latex="\mathcal{L}(\vec{\theta}, b; S_n) = \prod_{i=1}^n \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)^{y^{(i)}} (1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))^{1 - y^{(i)}}" />
 
-We could stop here, but the iterated product $$\Pi$$ is super nasty to take gradients over. Luckily we have an ace up our sleeve: recall that $$\argmax_x x = \argmax_x \ln(x)$$ (over a given domain). We can apply the natural log to the likelihood $$\mathcal{L}$$ to get the **log-likelihood** $$\ell$$, where $$\ell$$ and $$\mathcal{L}$$ are maximized by the same values of $$\vec{\theta}$$ and $$b$$.
+We could stop here, but the iterated product $$\Pi$$ is super nasty to take gradients over. Luckily we have an ace up our sleeve.
 
-<BlockEquation latex="\argmax_{\vec{\theta}, b} \mathcal{L}(\vec{\theta}, b; S_n) = \argmax_{\vec{\theta}, b} \ell(\vec{\theta}, b; S_n)" />
+Recall that $$\argmax_x x = \argmax_x \ln(x)$$ (over the same domain). We can apply the natural log to the likelihood $$\mathcal{L}$$ to get the **log-likelihood** $$\ell$$, where $$\ell$$ and $$\mathcal{L}$$ are maximized by the same values of $$\vec{\theta}$$ and $$b$$.
+
+<BlockEquation latex="\argmax_{\vec{\theta}, b} \mathcal{L}(\vec{\theta}, b; S_n) = \argmax_{\vec{\theta}, b} \ln\mathcal{L}(\vec{\theta}, b; S_n) = \argmax_{\vec{\theta}, b} \ell(\vec{\theta}, b; S_n)" />
 
 Looking at the log-likelihood then:
 
@@ -180,22 +201,20 @@ we can simplify the log-likelihood to:
 
 This formulation of the optimization objective is something that's much nicer for gradient computation as that nasty iterated product is removed.
 
-So finally, we have the final format of the maximum likelihood estimation optimization problem that will give us the optimal parameters for the logistic regression model:
+So finally, we have the final format of the MLE problem that will give us the optimal parameters for the logistic regression model:
 
 <BlockEquation latex="\argmax_{\vec{\theta}, b} \ell(\vec{\theta}, b; S_n) = \argmax_{\vec{\theta}, b} \sum_{i=1}^n y^{(i)} \ln(\sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)) + (1 - y^{(i)}) \ln(1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))" />
 
-For stability reasons (among others), it is common to solve minimization problems rather than maximization problems - we can equivalently rewrite the MLE optimization problem as:
+By convention, it is common to solve minimization problems rather than maximization problems - we can equivalently rewrite the MLE optimization problem as:
 
-<BlockEquation latex="\argmin_{\vec{\theta}, b} -\ell(\vec{\theta}, b; S_n) = \argmin_{\vec{\theta}, b} -\sum_{i=1}^n y^{(i)} \ln(\sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)) + (1 - y^{(i)}) \ln(1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))" />
+<BlockEquation latex="\argmin_{\vec{\theta}, b} -\ell(\vec{\theta}, b; S_n) = \argmin_{\vec{\theta}, b} \sum_{i=1}^n -y^{(i)} \ln(\sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)) - (1 - y^{(i)}) \ln(1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))" />
 
 # Conclusion
 
-To recap, a logistic regression model is a binary classification model whose marginal distribution of labels is a Bernoulli distribution parameterized by a linear transformation of the feature vector with the parameters $$\vec{\theta}, b$$.
+To recap, a logistic regression model defines the conditional distribution of labels to be a Bernoulli distribution parameterized by a linear transformation of the feature vector with the parameters $$\vec{\theta}, b$$.
 
-<BlockEquation latex="\mathbb{P}(Y|X=\vec{x}) = \text{Ber}(\sigma(\vec{\theta} \cdot \vec{x} + b))" />
+<BlockEquation latex="\mathbb{P}(Y|\vec{X}=\vec{x}) = \text{Ber}(\sigma(\vec{\theta} \cdot \vec{x} + b))" />
 
 We can learn the optimal parameters $$\vec{\theta}, b$$ by performing maximum likelihood estimation using a dataset $$S_n$$ of $$n$$ independent observations. The MLE optimization problem simplifies to the following optimization problem that can be solved using traditional convex optimization methods.
 
-<BlockEquation latex="\argmin_{\vec{\theta}, b} -\ell(\vec{\theta}, b; S_n) = \argmin_{\vec{\theta}, b} -\sum_{i=1}^n y^{(i)} \ln(\sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)) + (1 - y^{(i)}) \ln(1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))" />
-
-While not always the most practical, studying these probability theoretic approaches are a great way to gain an appreciation for the complexity of machine learning strategies, and also understand how our modern neat abstractions of ML algorithms pack away tons of complexity.
+<BlockEquation latex="\argmin_{\vec{\theta}, b} \sum_{i=1}^n -y^{(i)} \ln(\sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b)) - (1 - y^{(i)}) \ln(1 - \sigma(\vec{\theta} \cdot \vec{x}^{(i)} + b))" />
