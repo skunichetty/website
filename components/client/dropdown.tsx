@@ -54,7 +54,7 @@ export default function Dropdown({ icon, title, children }: DropdownProps) {
 
   const toggle = contextSafe(() => {
     if (contentVisible) {
-      visibleAnim?.timeScale(2).reverse();
+      visibleAnim?.timeScale(1).reverse();
     } else {
       visibleAnim?.play();
     }
