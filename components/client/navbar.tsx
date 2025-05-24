@@ -7,8 +7,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { NavbarProps, Logo, DesktopNavbarItem } from "../server/navbar_static";
 
-const DELAY_FACTOR = 0.2;
-
+const DELAY_FACTOR = 0.5;
 
 interface NavbarItemDropdownProps {
   title: string;
@@ -32,7 +31,7 @@ function NavbarDropdownItem({
       timeline.fromTo(
         linkRef.current,
         { opacity: 0, xPercent: -10 },
-        { opacity: 1, duration: 0.75, xPercent: 0 },
+        { opacity: 1, duration: 0.75, xPercent: 0, ease: "circ.out" },
         index * DELAY_FACTOR
       );
   });
@@ -79,7 +78,7 @@ export default function Navbar({ links }: NavbarProps) {
   );
   const toggle = contextSafe(() => {
     if (dropdownActive) {
-      dropAnim?.timeScale(2).reverse();
+      dropAnim?.reverse();
     } else {
       dropAnim?.play();
     }

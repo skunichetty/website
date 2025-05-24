@@ -23,7 +23,7 @@ export default function Home() {
       <div className="block h-fit mt-6 sm:w-4/5 w-full px-10">
         <div className="line text-4xl">Hi, I&apos;m Sachchit.</div>
         <div className="line sm:text-2xl text-xl mt-1">
-          I&apos;m a software engineer and computer scientist.
+          Researcher and software engineer.
         </div>
         <div className="line">
           <Location />
@@ -49,22 +49,6 @@ export default function Home() {
                 <b>GPA:</b> 3.97/4.00 (Summa Cum Laude)
               </p>
             </div>
-          </div>
-        </Dropdown>
-        <Dropdown icon="library" title="Skills">
-          <div className="md:text-sm text-xs">
-            <LineWithHeading
-              heading="Programming Languages"
-              description="C++, Python"
-            />
-            <LineWithHeading
-              heading="Operating Systems:"
-              description="Linux, MacOS, (some) Windows"
-            />
-            <LineWithHeading
-              heading="Tools and Software"
-              description="(Neo)vim, VSCode, Git, Docker, CMake, Figma"
-            />
           </div>
         </Dropdown>
       </div>
