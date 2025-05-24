@@ -23,7 +23,7 @@ export default function Home() {
       <div className="block h-fit mt-6 sm:w-4/5 w-full px-10">
         <div className="line text-4xl">Hi, I&apos;m Sachchit.</div>
         <div className="line sm:text-2xl text-xl mt-1">
-          I&apos;m a researcher and software engineer.
+          Researcher and software engineer.
         </div>
         <div className="line">
           <Location />
